@@ -1,13 +1,24 @@
 package sb.mdr.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.data.redis.core.RedisHash;
+
 
 @Entity
 @Table(name = "dosen")
-public class Dosen {
+public class Dosen implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6400753748337189167L;
+	/**
+	 * 
+	 */
 	@Id
 	private String kodeDosen;
 	private String namaDosen;
@@ -74,5 +85,6 @@ public class Dosen {
 	public void setStatusDosen(String statusDosen) {
 		this.statusDosen = statusDosen;
 	}
+	
 
 }
