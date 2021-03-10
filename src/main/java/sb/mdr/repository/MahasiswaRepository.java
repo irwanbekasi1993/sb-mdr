@@ -18,7 +18,7 @@ public interface MahasiswaRepository extends JpaRepository<Mahasiswa, String> {
 
 	@Modifying
 	@Query(value = "insert into mahasiswa (nim,nama_mahasiswa,jenis_kelamin_mahasiswa,alamat_mahasiswa,nohp,email,status_mahasiswa) "
-			+ "values(:nim, :namaMahasiswa, :jeniskelaminMahasiswa, :alamatMahasiswa, :nohp, :email, :statusMahasiswa)", nativeQuery = true)
+			+ "values(:nim, :namaMahasiswa, :jenisKelaminMahasiswa, :alamatMahasiswa, :nohp, :email, :statusMahasiswa)", nativeQuery = true)
 	@Transactional
 	int insertDataMahasiswa(
 			@Param("nim")String nim,

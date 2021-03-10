@@ -30,7 +30,7 @@ public interface MateriRepository extends JpaRepository<Materi, String> {
 	List<Materi> selectAllMateri(@Param("limit")int limit);
 	
 	@Modifying
-	@Query(value="update materi set jenis_materi=:jenisMateri, isi_materi=:isiMateri ", nativeQuery=true)
+	@Query(value="update materi set jenis_materi=:jenisMateri, isi_materi=:isiMateri where kode_materi=:kodeMateri", nativeQuery=true)
 	@Transactional
 	int updateDataMateri(@Param("jenisMateri")String jenisMateri,@Param("isiMateri")String isiMateri,
 			@Param("kodeMateri")String kodeMateri);
@@ -41,7 +41,7 @@ public interface MateriRepository extends JpaRepository<Materi, String> {
 	int deleteDataMateri(@Param("kodeMateri")String kodeMateri);
 	
 	@Query(value="select * from materi where kode_materi=:kodeMateri", nativeQuery=true)
-	Materi getMateriByKodeMateri(@Param("kodeSoal")String kodeMateri);
+	Materi getMateriByKodeMateri(@Param("kodeMateri")String kodeMateri);
 	
 	@Query(value="select count(kode_materi) from materi ", nativeQuery=true)
 	int hitungMateri();

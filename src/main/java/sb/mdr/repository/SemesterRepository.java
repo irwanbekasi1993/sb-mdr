@@ -32,7 +32,7 @@ public interface SemesterRepository extends JpaRepository<Semester, String> {
 	
 	@Modifying
 	@Query(value="update semester set period=:period, waktu_masuk=:waktuMasuk, "
-			+ "waktu_keluar=:waktukeluar, "
+			+ "waktu_keluar=:waktuKeluar, "
 			+ "ganjil_genap=:ganjilGenap"
 			+ " where kode_semester=:kodeSemester", nativeQuery=true)
 	@Transactional

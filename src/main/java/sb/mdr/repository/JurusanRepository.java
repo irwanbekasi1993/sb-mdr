@@ -26,9 +26,9 @@ public interface JurusanRepository extends JpaRepository<Jurusan, String> {
 	List<Jurusan> selectAllJurusan(@Param("limit")int limit);
 	
 	@Modifying
-	@Query(value="update jurusan set nama_jurusan=:namaJurusan", nativeQuery=true)
+	@Query(value="update jurusan set nama_jurusan=:namaJurusan where kode_jurusan=:kodeJurusan", nativeQuery=true)
 	@Transactional
-	int updateDataJurusan(@Param("namaJurusan")String namaJurusan, @Param("kodeMatkul")String kodeMatkul);
+	int updateDataJurusan(@Param("namaJurusan")String namaJurusan, @Param("kodeJurusan")String kodeJurusan);
 	
 	@Modifying
 	@Query(value="delete from jurusan where kode_jurusan=:kodeJurusan", nativeQuery=true)

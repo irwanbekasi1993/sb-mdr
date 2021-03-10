@@ -19,23 +19,23 @@ import sb.mdr.model.Soal;
 public interface SoalRepository extends JpaRepository<Soal, String> {
 
 	@Modifying
-	@Query(value = "insert into soal (kode_soal,jenis_soal,waktu_pengerjaan,waktu_pengumpulan,isi_soal) "
-			+ "values(:kodeSoal,:jenisSoal,:waktuPengerjaan,:waktuPengumpulan,:isiSoal)", nativeQuery = true)
+	@Query(value = "insert into soal (kode_soal,jenis_soal,waktu_pengerjaan,waktu_pengumpulan,isi_soal,nilai) "
+			+ "values(:kodeSoal,:jenisSoal,:waktuPengerjaan,:waktuPengumpulan,:isiSoal,:nilai)", nativeQuery = true)
 	@Transactional
 	int insertDataSoal(@Param("kodeSoal")String kodeSoal, @Param("jenisSoal")String jenisSoal,
 			@Param("waktuPengerjaan")Date waktuPengerjaan, @Param("waktuPengumpulan")Date waktuPengumpulan,
-			@Param("isiSoal")String isiSoal);
+			@Param("isiSoal")String isiSoal,@Param("nilai")int nilai);
 	
 	@Query(value="select * from soal limit :limit", nativeQuery=true)
 	List<Soal> selectAllSoal(@Param("limit")int limit);
 	
 	@Modifying
 	@Query(value="update soal set jenis_soal=:jenisSoal, waktu_pengerjaan=:waktuPengerjaan, "
-			+ "waktu_pengumpulan=:waktuPengumpulan, isi_soal=:isi_soal "
-			+ " where kode_nilai=:kodeNilai", nativeQuery=true)
+			+ "waktu_pengumpulan=:waktuPengumpulan, isi_soal=:isiSoal, nilai=:nilai "
+			+ " where kode_soal=:kodeSoal", nativeQuery=true)
 	@Transactional
 	int updateDataSoal(@Param("jenisSoal")String jenisSoal,@Param("waktuPengerjaan")Date waktuPengerjaan,
-			@Param("waktuPengumpulan")Date waktuPengumpulan,@Param("isiSoal")String isiSoal,
+			@Param("waktuPengumpulan")Date waktuPengumpulan,@Param("isiSoal")String isiSoal,@Param("nilai")int nilai,
 			@Param("kodeSoal")String kodeSoal);
 	
 	@Modifying

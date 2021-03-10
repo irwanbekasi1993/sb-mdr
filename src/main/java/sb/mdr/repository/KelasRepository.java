@@ -21,26 +21,26 @@ public interface KelasRepository extends JpaRepository<Kelas, String> {
 	@Query(value = "insert into kelas (kode_kelas,nama_kelas,kapasitas_kelas,jenis_kelas) "
 			+ "values(:kodeKelas, :namaKelas, :kapasitasKelas, :jenisKelas)", nativeQuery = true)
 	@Transactional
-	int insertDataKelas(@Param("kodekelas")String kodekelas, @Param("namaKelas")String namakelas,
+	int insertDataKelas(@Param("kodeKelas")String kodekelas, @Param("namaKelas")String namakelas,
 			@Param("kapasitasKelas")int kapasitasKelas, @Param("jenisKelas")String jenisKelas);
 	
 	@Query(value="select * from kelas limit :limit", nativeQuery=true)
 	List<Kelas> selectAllKelas(@Param("limit")int limit);
 	
 	@Modifying
-	@Query(value="update kelas set nama_kelas=:namakelas, kapasitas_kelas=:kapasitasKelas,"
+	@Query(value="update kelas set nama_kelas=:namaKelas, kapasitas_kelas=:kapasitasKelas,"
 			+ "jenis_kelas=:jenisKelas where kode_kelas=:kodeKelas", nativeQuery=true)
 	@Transactional
-	int updateDataKelas(@Param("namaKelas")String namaMatKul,
+	int updateDataKelas(@Param("namaKelas")String namaKelas,
 			@Param("kapasitasKelas")int kapasitasKelas, 
 			@Param("jenisKelas")String jenisKelas, @Param("kodeKelas")String kodeKelas);
 	
 	@Modifying
-	@Query(value="delete from kelas where kode_kelas=:kodekelas", nativeQuery=true)
+	@Query(value="delete from kelas where kode_kelas=:kodeKelas", nativeQuery=true)
 	@Transactional
 	int deleteDataKelas(@Param("kodeKelas")String kodeKelas);
 	
-	@Query(value="select * from kelas where kode_kelas=:kodekelas", nativeQuery=true)
+	@Query(value="select * from kelas where kode_kelas=:kodeKelas", nativeQuery=true)
 	Kelas getKelasByKodeKelas(@Param("kodeKelas")String kodeKelas);
 	
 	@Query(value="select count(kode_kelas) from kelas ", nativeQuery=true)

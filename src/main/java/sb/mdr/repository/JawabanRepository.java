@@ -34,15 +34,15 @@ public interface JawabanRepository extends JpaRepository<Jawaban, String> {
 			+ " where kode_jawaban=:kodeJawaban", nativeQuery = true)
 	@Transactional
 	int updateDataJawaban(@Param("jenisJawaban") String jenisJawaban, @Param("isiJawaban") String isiJawaban,
-			@Param("kodeSoal") String kodeSoal);
+			@Param("kodeJawaban") String kodeJawaban);
 
 	@Modifying
 	@Query(value = "delete from jawaban where kode_jawaban=:kodeJawaban", nativeQuery = true)
 	@Transactional
-	int deleteDataJawaban(@Param("kodejawaban") String kodeJawaban);
+	int deleteDataJawaban(@Param("kodeJawaban") String kodeJawaban);
 
 	@Query(value = "select * from jawaban where kode_jawaban=:kodeJawaban", nativeQuery = true)
-	Jawaban getJawabanByKodeJawaban(@Param("kodejawaban") String kodeJawaban);
+	Jawaban getJawabanByKodeJawaban(@Param("kodeJawaban") String kodeJawaban);
 
 	@Query(value = "select count(kode_jawaban) from jawaban ", nativeQuery = true)
 	int hitungJawaban();
