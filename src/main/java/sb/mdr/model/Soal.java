@@ -2,9 +2,11 @@ package sb.mdr.model;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@Entity
 @Table(name = "soal")
 public class Soal {
 	@Id
@@ -13,8 +15,17 @@ public class Soal {
 	private Date waktuPengerjaan;
 	private Date waktuPengumpulan;
 	private String isiSoal;
+	private int nilai;
 	
 	
+
+	public int getNilai() {
+		return nilai;
+	}
+
+	public void setNilai(int nilai) {
+		this.nilai = nilai;
+	}
 
 	public String getIsiSoal() {
 		return isiSoal;
