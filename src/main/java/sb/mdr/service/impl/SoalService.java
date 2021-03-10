@@ -40,7 +40,7 @@ public class SoalService {
 		}
 		try {
 			flagInsert = soalRepository.insertDataSoal(localSoal.getKodeSoal(), localSoal.getJenisSoal(),
-					localSoal.getWaktuPengerjaan(),localSoal.getWaktuPengumpulan(),localSoal.getIsiSoal());
+					localSoal.getWaktuPengerjaan(),localSoal.getWaktuPengumpulan(),localSoal.getIsiSoal(),localSoal.getNilai());
 
 			if(flagInsert==1) {
 				result="data semester berhasil dimasukkan dengan kode soal: "+cekSoal;
@@ -97,7 +97,7 @@ public class SoalService {
 		String result=null;
 		try {
 			updateFlag = soalRepository.updateDataSoal(soal.getJenisSoal(),soal.getWaktuPengerjaan(),
-					soal.getWaktuPengumpulan(),soal.getIsiSoal(),kodeSoal);
+					soal.getWaktuPengumpulan(),soal.getIsiSoal(),soal.getNilai(),kodeSoal);
 			if(updateFlag==1) {
 				result="data soal telah diperbaharui dengan kode soal: "+kodeSoal;
 			}
