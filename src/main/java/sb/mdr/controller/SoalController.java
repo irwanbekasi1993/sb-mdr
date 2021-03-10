@@ -27,31 +27,31 @@ public class SoalController {
 	@Autowired
 	private SoalService soalService;
 
-	@RequestMapping(value = "/insert/soal", method = RequestMethod.POST)
+	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataSoal(@RequestBody Soal soal) {
 		String flagInsert = soalService.insertSoal(soal);
 		return flagInsert;
 	}
 
-	@RequestMapping(value = "/all/soal/{limit}", method = RequestMethod.GET)
+	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
 	public List<Soal> getAllSoal(@PathVariable("limit") int limit) {
 		List<Soal> listSoal = soalService.getAllSoal(limit);
 		return listSoal;
 	}
 	
-	@RequestMapping(value = "/soal/{kodeSoal}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{kodeSoal}", method = RequestMethod.GET)
 	public Soal getSoal(@PathVariable("kodeSoal") String kodeSoal) {
 		Soal soal = soalService.getSoal(kodeSoal);
 		return soal;
 	}
 	
-	@RequestMapping(value = "/update/soal/{kodeSoal}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/update/{kodeSoal}", method = RequestMethod.PUT)
 	public String updateDataSoal(@RequestBody Soal soal, @PathVariable("kodeSoal") String kodeSoal) {
 		String flagUpdate = soalService.updateSoal(soal,kodeSoal);
 		return flagUpdate;
 	}
 	
-	@RequestMapping(value = "/delete/soal/{kodeSoal}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete/{kodeSoal}", method = RequestMethod.DELETE)
 	public String deleteDataSoal(@PathVariable("kodeSoal") String kodeSoal) {
 		String flagUpdate = soalService.deleteSoal(kodeSoal);
 		return flagUpdate;

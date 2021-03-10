@@ -29,31 +29,31 @@ public class JawabanController {
 	@Autowired
 	private JawabanService jawabanService;
 
-	@RequestMapping(value = "/insert/jawaban", method = RequestMethod.POST)
+	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataJawaban(@RequestBody Jawaban jawaban) {
 		String flagInsert = jawabanService.insertJawaban(jawaban);
 		return flagInsert;
 	}
 
-	@RequestMapping(value = "/all/jawaban/{limit}", method = RequestMethod.GET)
+	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
 	public List<Jawaban> getAllSoal(@PathVariable("limit") int limit) {
 		List<Jawaban> listJawaban = jawabanService.getAllJawaban(limit);
 		return listJawaban;
 	}
 	
-	@RequestMapping(value = "/jawaban/{kodeJawaban}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{kodeJawaban}", method = RequestMethod.GET)
 	public Jawaban getJawaban(@PathVariable("kodeJawaban") String kodeJawaban) {
 		Jawaban jawaban = jawabanService.getJawaban(kodeJawaban);
 		return jawaban;
 	}
 	
-	@RequestMapping(value = "/update/jawaban/{kodeJawaban}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/update/{kodeJawaban}", method = RequestMethod.PUT)
 	public String updateDataJawaban(@RequestBody Jawaban jawaban, @PathVariable("kodeJawaban") String kodeJawaban) {
 		String flagUpdate = jawabanService.updateJawaban(jawaban,kodeJawaban);
 		return flagUpdate;
 	}
 	
-	@RequestMapping(value = "/delete/jawaban/{kodeJawaban}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete/{kodeJawaban}", method = RequestMethod.DELETE)
 	public String deleteDataJawaban(@PathVariable("kodejawaban") String kodeJawaban) {
 		String flagUpdate = jawabanService.deleteJawaban(kodeJawaban);
 		return flagUpdate;

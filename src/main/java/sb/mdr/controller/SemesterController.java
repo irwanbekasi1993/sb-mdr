@@ -25,31 +25,31 @@ public class SemesterController {
 	@Autowired
 	private SemesterService semesterService;
 
-	@RequestMapping(value = "/insert/semester", method = RequestMethod.POST)
+	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataSemester(@RequestBody Semester semester) {
 		String flagInsert = semesterService.insertSemester(semester);
 		return flagInsert;
 	}
 
-	@RequestMapping(value = "/all/semester/{limit}", method = RequestMethod.GET)
+	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
 	public List<Semester> getAllSemester(@PathVariable("limit") int limit) {
 		List<Semester> listSemester = semesterService.getAllSemester(limit);
 		return listSemester;
 	}
 	
-	@RequestMapping(value = "/semester/{kodeSemester}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{kodeSemester}", method = RequestMethod.GET)
 	public Semester getSemester(@PathVariable("kodeSemester") String kodeSemester) {
 		Semester semester = semesterService.getSemester(kodeSemester);
 		return semester;
 	}
 	
-	@RequestMapping(value = "/update/semester/{kodeSemester}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/update/{kodeSemester}", method = RequestMethod.PUT)
 	public String updateDataSemester(@RequestBody Semester semester, @PathVariable("kodeSemester") String kodeSemester) {
 		String flagUpdate = semesterService.updateSemester(semester,kodeSemester);
 		return flagUpdate;
 	}
 	
-	@RequestMapping(value = "/delete/semester/{kodeSemester}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete/{kodeSemester}", method = RequestMethod.DELETE)
 	public String deleteDataSemester(@PathVariable("kodeSemester") String kodeSemester) {
 		String flagUpdate = semesterService.deleteSemester(kodeSemester);
 		return flagUpdate;

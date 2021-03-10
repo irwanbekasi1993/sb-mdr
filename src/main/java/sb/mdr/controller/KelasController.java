@@ -23,31 +23,31 @@ public class KelasController {
 	@Autowired
 	private KelasService kelasService;
 
-	@RequestMapping(value = "/insert/kelas", method = RequestMethod.POST)
+	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataDosen(@RequestBody Kelas kelas) {
 		String flagInsert = kelasService.insertKelas(kelas);
 		return flagInsert;
 	}
 
-	@RequestMapping(value = "/all/kelas/{limit}", method = RequestMethod.GET)
+	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
 	public List<Kelas> getAllKelas(@PathVariable("limit") int limit) {
 		List<Kelas> listKelas = kelasService.getAllKelas(limit);
 		return listKelas;
 	}
 	
-	@RequestMapping(value = "/kelas/{kodeKelas}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{kodeKelas}", method = RequestMethod.GET)
 	public Kelas getKelas(@PathVariable("kodeKelas") String kodeKelas) {
 		Kelas kelas = kelasService.getKelas(kodeKelas);
 		return kelas;
 	}
 	
-	@RequestMapping(value = "/update/kelas/{kodeKelas}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/update/{kodeKelas}", method = RequestMethod.PUT)
 	public String updateDataKelas(@RequestBody Kelas kelas, @PathVariable("kodeKelas") String kodeKelas) {
 		String flagUpdate = kelasService.updateKelas(kelas,kodeKelas);
 		return flagUpdate;
 	}
 	
-	@RequestMapping(value = "/delete/kelas/{kodeKelas}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete/{kodeKelas}", method = RequestMethod.DELETE)
 	public String deleteDataKelas(@PathVariable("kodeKelas") String kodeKelas) {
 		String flagUpdate = kelasService.deleteKelas(kodeKelas);
 		return flagUpdate;

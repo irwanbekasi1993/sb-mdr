@@ -23,31 +23,31 @@ public class MataKuliahController {
 	@Autowired
 	private MataKuliahService matKulService;
 
-	@RequestMapping(value = "/insert/matkul", method = RequestMethod.POST)
+	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataMatKul(@RequestBody MataKuliah matkul) {
 		String flagInsert = matKulService.insertMatKul(matkul);
 		return flagInsert;
 	}
 
-	@RequestMapping(value = "/all/matkul/{limit}", method = RequestMethod.GET)
+	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
 	public List<MataKuliah> getAllMatKul(@PathVariable("limit") int limit) {
 		List<MataKuliah> listMatKul = matKulService.getAllMatKul(limit);
 		return listMatKul;
 	}
 	
-	@RequestMapping(value = "/matkul/{kodeMatKul}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{kodeMatKul}", method = RequestMethod.GET)
 	public MataKuliah getMatKul(@PathVariable("kodeMatKul") String kodeMatKul) {
 		MataKuliah matkul = matKulService.getMatKul(kodeMatKul);
 		return matkul;
 	}
 	
-	@RequestMapping(value = "/update/matkul/{kodeMatKul}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/update/{kodeMatKul}", method = RequestMethod.PUT)
 	public String updateDataMatKul(@RequestBody MataKuliah matkul, @PathVariable("kodeMatKul") String kodeMatKul) {
 		String flagUpdate = matKulService.updateMatKul(matkul,kodeMatKul);
 		return flagUpdate;
 	}
 	
-	@RequestMapping(value = "/delete/matkul/{kodeMatKul}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete/{kodeMatKul}", method = RequestMethod.DELETE)
 	public String deleteDataMatKul(@PathVariable("kodeMatKul") String kodeMatKul) {
 		String flagUpdate = matKulService.deleteMatKul(kodeMatKul);
 		return flagUpdate;

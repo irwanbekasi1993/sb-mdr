@@ -25,31 +25,31 @@ public class JurusanController {
 	@Autowired
 	private JurusanService jurusanService;
 
-	@RequestMapping(value = "/insert/jurusan", method = RequestMethod.POST)
+	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataJurusan(@RequestBody Jurusan jurusan) {
 		String flagInsert = jurusanService.insertJurusan(jurusan);
 		return flagInsert;
 	}
 
-	@RequestMapping(value = "/all/jurusan/{limit}", method = RequestMethod.GET)
+	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
 	public List<Jurusan> getAllMatKul(@PathVariable("limit") int limit) {
 		List<Jurusan> listJurusan = jurusanService.getAllJurusan(limit);
 		return listJurusan;
 	}
 	
-	@RequestMapping(value = "/jurusan/{kodeJurusan}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{kodeJurusan}", method = RequestMethod.GET)
 	public Jurusan getJurusan(@PathVariable("kodeJurusan") String kodeJurusan) {
 		Jurusan jurusan = jurusanService.getJurusan(kodeJurusan);
 		return jurusan;
 	}
 	
-	@RequestMapping(value = "/update/jurusan/{kodeJurusan}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/update/{kodeJurusan}", method = RequestMethod.PUT)
 	public String updateDataJurusan(@RequestBody Jurusan jurusan, @PathVariable("kodeJurusan") String kodeJurusan) {
 		String flagUpdate = jurusanService.updateJurusan(jurusan,kodeJurusan);
 		return flagUpdate;
 	}
 	
-	@RequestMapping(value = "/delete/jurusan/{kodeJurusan}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete/{kodeJurusan}", method = RequestMethod.DELETE)
 	public String deleteDataJurusan(@PathVariable("kodeJurusan") String kodeJurusan) {
 		String flagUpdate = jurusanService.deleteJurusan(kodeJurusan);
 		return flagUpdate;

@@ -23,31 +23,31 @@ public class MahasiswaController {
 	@Autowired
 	private MahasiswaService mahasiswaService;
 
-	@RequestMapping(value = "/insert/mahasiswa", method = RequestMethod.POST)
+	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataDosen(@RequestBody Mahasiswa mahasiswa) {
 		String flagInsert = mahasiswaService.insertMahasiswa(mahasiswa);
 		return flagInsert;
 	}
 
-	@RequestMapping(value = "/all/mahasiswa/{limit}", method = RequestMethod.GET)
+	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
 	public List<Mahasiswa> getAllDosen(@PathVariable("limit") int limit) {
 		List<Mahasiswa> listMahasiswa = mahasiswaService.getAllMahasiswa(limit);
 		return listMahasiswa;
 	}
 	
-	@RequestMapping(value = "/mahasiswa/{nim}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{nim}", method = RequestMethod.GET)
 	public Mahasiswa getMahasiswa(@PathVariable("nim") String nim) {
 		Mahasiswa mahasiswa = mahasiswaService.getMahasiswa(nim);
 		return mahasiswa;
 	}
 	
-	@RequestMapping(value = "/update/mahasiswa/{nim}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/update/{nim}", method = RequestMethod.PUT)
 	public String updateDataMahasiswa(@RequestBody Mahasiswa mahasiswa, @PathVariable("nim") String nim) {
 		String flagUpdate = mahasiswaService.updateMahasiswa(mahasiswa,nim);
 		return flagUpdate;
 	}
 	
-	@RequestMapping(value = "/delete/mahasiswa/{nim}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete/{nim}", method = RequestMethod.DELETE)
 	public String deleteDataMahasiswa(@PathVariable("nim") String nim) {
 		String flagUpdate = mahasiswaService.deleteMahasiswa(nim);
 		return flagUpdate;
