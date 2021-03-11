@@ -6,12 +6,18 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sb.mdr.model.Dosen;
 import sb.mdr.model.Mahasiswa;
+import sb.mdr.model.redis.RedisMahasiswa;
 import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.MahasiswaRepository;
+import sb.mdr.repository.redis.RedisMahasiswaRepository;
 
 @Service
 public class MahasiswaService {
@@ -20,6 +26,16 @@ public class MahasiswaService {
 	private MahasiswaRepository mahasiswaRepository;
 
 	private Mahasiswa mahasiswa;
+	
+	private RedisMahasiswa redisMahasiswa;
+	
+	@Autowired
+	private RedisMahasiswaRepository redisMahasiswaRepo;
+	
+	@Autowired
+	private KafkaTemplate<String,String> kafkaTemplate;
+	
+	private ObjectMapper objectMapper;
 
 	public String insertMahasiswa(Mahasiswa localMahasiswa) {
 		int increment = 0;
@@ -28,11 +44,11 @@ public class MahasiswaService {
 		String cekMahasiswa = mahasiswaRepository.getLastNim();
 		if(cekMahasiswa==null) {
 			increment += 1;
-			localMahasiswa.setNim("DSN" + increment);
+			localMahasiswa.setNim("MHS" + increment);
 
 		}else {
 			increment=mahasiswaRepository.hitungMahasiswa()+1;
-			localMahasiswa.setNim("DSN" + increment);
+			localMahasiswa.setNim("MHS" + increment);
 		}
 		try {
 			flagInsert = mahasiswaRepository.insertDataMahasiswa(localMahasiswa.getNim(), localMahasiswa.getNamaMahasiswa(),
@@ -41,6 +57,22 @@ public class MahasiswaService {
 					localMahasiswa.getStatusMahasiswa());
 
 			if(flagInsert==1) {
+				
+				redisMahasiswa.setNim(localMahasiswa.getNim());
+				redisMahasiswa.setNamaMahasiswa(localMahasiswa.getNamaMahasiswa());
+				redisMahasiswa.setJenisKelaminMahasiswa(localMahasiswa.getJenisKelaminMahasiswa());
+				redisMahasiswa.setAlamatMahasiswa(localMahasiswa.getAlamatMahasiswa());
+				redisMahasiswa.setEmail(localMahasiswa.getEmail());
+				redisMahasiswa.setNohp(localMahasiswa.getNohp());
+				redisMahasiswa.setStatusMahasiswa(localMahasiswa.getStatusMahasiswa());
+				redisMahasiswaRepo.save(redisMahasiswa);
+				
+				byte[]bytes = objectMapper.writeValueAsBytes(localMahasiswa);
+				String str = new String(bytes);
+				kafkaTemplate.send("sbmdr",str);
+				System.err.println("sending message: "+str);
+				receiveMessage("sbmdr");
+				
 				result="data mahasiswa berhasil dimasukkan dengan nim: "+cekMahasiswa;
 			}
 		} catch (Exception e) {
@@ -48,6 +80,11 @@ public class MahasiswaService {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	@KafkaListener(topics="sbmdr",groupId="sbmdr")
+	public void receiveMessage(String data) {
+		System.err.println("receive message: "+data);
 	}
 
 	public List<Mahasiswa> getAllMahasiswa(int limit) {
@@ -97,6 +134,25 @@ public class MahasiswaService {
 			updateFlag = mahasiswaRepository.updateDataMahasiswa(mahasiswa.getNamaMahasiswa(),mahasiswa.getJenisKelaminMahasiswa(),
 					mahasiswa.getAlamatMahasiswa(),mahasiswa.getNohp(), mahasiswa.getEmail(),mahasiswa.getStatusMahasiswa(), nim);
 			if(updateFlag==1) {
+				
+				mahasiswa.setNim(nim);
+				redisMahasiswa.setNim(mahasiswa.getNim());
+				redisMahasiswa.setNamaMahasiswa(mahasiswa.getNamaMahasiswa());
+				redisMahasiswa.setJenisKelaminMahasiswa(mahasiswa.getJenisKelaminMahasiswa());
+				redisMahasiswa.setAlamatMahasiswa(mahasiswa.getAlamatMahasiswa());
+				redisMahasiswa.setEmail(mahasiswa.getEmail());
+				redisMahasiswa.setNohp(mahasiswa.getNohp());
+				redisMahasiswa.setStatusMahasiswa(mahasiswa.getStatusMahasiswa());
+				redisMahasiswaRepo.save(redisMahasiswa);
+				
+				byte[]bytes = objectMapper.writeValueAsBytes(mahasiswa);
+				String str = new String(bytes);
+				kafkaTemplate.send("sbmdr",str);
+				
+				System.err.println("sending message: "+str);
+				receiveMessage("sbmdr");
+				
+				
 				result="data mahasiswa telah diperbaharui dengan nim: "+nim;
 			}
 		} catch (Exception e) {

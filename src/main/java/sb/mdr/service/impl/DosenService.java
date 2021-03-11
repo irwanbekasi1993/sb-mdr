@@ -1,12 +1,23 @@
 package sb.mdr.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sb.mdr.model.Dosen;
 import sb.mdr.model.redis.RedisDosen;
@@ -25,6 +36,13 @@ public class DosenService {
 	private RedisDosen redisDosen = new RedisDosen();
 
 	private Dosen dosen;
+
+	@Autowired
+	private KafkaTemplate<String, String> kafkaTemplate;
+
+	private KafkaConsumer<String, Dosen> kafkaConsumer;
+	
+	private ObjectMapper mapper = new ObjectMapper();
 
 	public String insertDosen(Dosen localDosen) {
 		int increment = 0;
@@ -54,6 +72,16 @@ public class DosenService {
 			redisDosenRepo.save(redisDosen);
 
 			if (flagInsert == 1) {
+				
+				byte[]bytes = mapper.writeValueAsBytes(dosen);
+				String str= new String(bytes);
+				
+				System.err.println("sending message: "+str);
+				
+				kafkaTemplate.send("sbmdr", str);
+				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
+				receiveMessage("sbmdr");
+				
 				result = "data dosen berhasil dimasukkan dengan kode dosen: " + cekDosen;
 			}
 		} catch (Exception e) {
@@ -93,7 +121,8 @@ public class DosenService {
 		try {
 			deleteFlag = dosenRepository.deleteDataDosen(kodeDosen);
 			if (deleteFlag == 1) {
-
+				redisDosen.setKodeDosen(kodeDosen);
+				redisDosenRepo.deleteById(redisDosen.getKodeDosen());
 				result = "data dosen dengan kode dosen: " + kodeDosen + " telah dihapus";
 			}
 		} catch (Exception e) {
@@ -110,6 +139,24 @@ public class DosenService {
 			updateFlag = dosenRepository.updateDataDosen(dosen.getNamaDosen(), dosen.getAlamatDosen(),
 					dosen.getJenisKelaminDosen(), dosen.getStatusDosen(), dosen.getNohp(), dosen.getEmail(), kodeDosen);
 			if (updateFlag == 1) {
+				dosen.setKodeDosen(kodeDosen);
+				redisDosen.setKodeDosen(dosen.getKodeDosen());
+				redisDosen.setNamaDosen(dosen.getNamaDosen());
+				redisDosen.setJenisKelaminDosen(dosen.getJenisKelaminDosen());
+				redisDosen.setAlamatDosen(dosen.getAlamatDosen());
+				redisDosen.setStatusDosen(dosen.getStatusDosen());
+				redisDosen.setNohp(dosen.getNohp());
+				redisDosen.setEmail(dosen.getEmail());
+				redisDosenRepo.save(redisDosen);
+				
+				byte[]bytes = mapper.writeValueAsBytes(dosen);
+				String str= new String(bytes);
+				
+				System.err.println("sending message: "+str);
+				
+				kafkaTemplate.send("sbmdr", str);
+				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
+				receiveMessage("sbmdr");
 				result = "data dosen telah diperbaharui dengan kode dosen: " + kodeDosen;
 			}
 		} catch (Exception e) {
@@ -117,6 +164,11 @@ public class DosenService {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	@KafkaListener(topics="sbmdr",groupId="sbmdr")
+	public void receiveMessage(String data) {
+		System.err.println("receive message: "+data);
 	}
 
 	public DosenRepository getDosenRepository() {

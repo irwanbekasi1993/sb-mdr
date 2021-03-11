@@ -6,14 +6,20 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sb.mdr.model.Dosen;
 import sb.mdr.model.Kelas;
 import sb.mdr.model.MataKuliah;
+import sb.mdr.model.redis.RedisKelas;
 import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.KelasRepository;
 import sb.mdr.repository.MataKuliahRepository;
+import sb.mdr.repository.redis.RedisKelasRepository;
 
 @Service
 public class KelasService {
@@ -22,6 +28,16 @@ public class KelasService {
 	private KelasRepository kelasRepository;
 
 	private Kelas kelas;
+	
+	private RedisKelas redisKelas;
+	
+	@Autowired
+	private RedisKelasRepository redisKelasRepo;
+	
+	@Autowired
+	private KafkaTemplate<String,String> kafkaTemplate;
+	
+	private ObjectMapper mapper;
 
 	public String insertKelas(Kelas localKelas) {
 		int increment = 0;
@@ -30,17 +46,30 @@ public class KelasService {
 		String cekKelas = kelasRepository.getLastKodeKelas();
 		if(cekKelas==null) {
 			increment += 1;
-			localKelas.setKodeKelas("DSN" + increment);
+			localKelas.setKodeKelas("KLS" + increment);
 
 		}else {
 			increment=kelasRepository.hitungKelas()+1;
-			localKelas.setKodeKelas("DSN" + increment);
+			localKelas.setKodeKelas("KLS" + increment);
 		}
 		try {
 			flagInsert = kelasRepository.insertDataKelas(localKelas.getKodeKelas(), localKelas.getNamaKelas(),
 					localKelas.getKapasitasKelas(),localKelas.getJenisKelas());
 
 			if(flagInsert==1) {
+				
+				redisKelas.setKodeKelas(localKelas.getKodeKelas());
+				redisKelas.setNamaKelas(localKelas.getNamaKelas());
+				redisKelas.setKapasitasKelas(localKelas.getKapasitasKelas());
+				redisKelas.setJenisKelas(localKelas.getJenisKelas());
+				redisKelasRepo.save(redisKelas);
+				
+				byte[] bytes = mapper.writeValueAsBytes(localKelas);
+				String str = new String(bytes);
+				kafkaTemplate.send("sbmdr",str);
+				System.err.println("sending message: "+str);
+				
+				receiveMessage("sbmdr");
 				result="data kelas berhasil dimasukkan dengan kode kelas: "+cekKelas;
 			}
 		} catch (Exception e) {
@@ -96,7 +125,23 @@ public class KelasService {
 		try {
 			updateFlag = kelasRepository.updateDataKelas(kelas.getNamaKelas(),kelas.getKapasitasKelas(), 
 					kelas.getJenisKelas(),kodeKelas);
+			
+			
 			if(updateFlag==1) {
+				kelas.setKodeKelas(kodeKelas);
+				redisKelas.setKodeKelas(kelas.getKodeKelas());
+				redisKelas.setNamaKelas(kelas.getNamaKelas());
+				redisKelas.setKapasitasKelas(kelas.getKapasitasKelas());
+				redisKelas.setJenisKelas(kelas.getJenisKelas());
+				redisKelasRepo.save(redisKelas);
+				
+				byte[] bytes = mapper.writeValueAsBytes(kelas);
+				String str = new String(bytes);
+				kafkaTemplate.send("sbmdr",str);
+				
+				System.err.println("sending message: "+str);
+				receiveMessage("sbmdr");
+				
 				result="data kelas telah diperbaharui dengan kode kelas: "+kodeKelas;
 			}
 		} catch (Exception e) {
@@ -104,6 +149,11 @@ public class KelasService {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	@KafkaListener(topics="sbmdr",groupId="sbmdr")
+	public void receiveMessage(String data) {
+		System.err.println("receive message: "+data);
 	}
 
 	public KelasRepository getKelasRepository() {

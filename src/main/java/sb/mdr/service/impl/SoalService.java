@@ -6,16 +6,22 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sb.mdr.model.Dosen;
 import sb.mdr.model.MataKuliah;
 import sb.mdr.model.Semester;
 import sb.mdr.model.Soal;
+import sb.mdr.model.redis.RedisSoal;
 import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.MataKuliahRepository;
 import sb.mdr.repository.SemesterRepository;
 import sb.mdr.repository.SoalRepository;
+import sb.mdr.repository.redis.RedisSoalRepository;
 
 @Service
 public class SoalService {
@@ -24,6 +30,17 @@ public class SoalService {
 	private SoalRepository soalRepository;
 
 	private Soal soal;
+	
+	private RedisSoal redisSoal;
+	
+	@Autowired
+	private RedisSoalRepository redisSoalRepo;
+	
+	@Autowired
+	private KafkaTemplate<String,String> kafkaTemplate;
+	
+	private ObjectMapper objectMapper;
+	
 
 	public String insertSoal(Soal localSoal) {
 		int increment = 0;
@@ -32,17 +49,32 @@ public class SoalService {
 		String cekSoal = soalRepository.getLastKodeSoal();
 		if(cekSoal==null) {
 			increment += 1;
-			localSoal.setKodeSoal("DSN" + increment);
+			localSoal.setKodeSoal("TGS" + increment);
 
 		}else {
 			increment=soalRepository.hitungSoal()+1;
-			localSoal.setKodeSoal("DSN" + increment);
+			localSoal.setKodeSoal("TGS" + increment);
 		}
 		try {
 			flagInsert = soalRepository.insertDataSoal(localSoal.getKodeSoal(), localSoal.getJenisSoal(),
 					localSoal.getWaktuPengerjaan(),localSoal.getWaktuPengumpulan(),localSoal.getIsiSoal(),localSoal.getNilai());
 
 			if(flagInsert==1) {
+				
+				redisSoal.setKodeSoal(localSoal.getKodeSoal());
+				redisSoal.setJenisSoal(localSoal.getJenisSoal());
+				redisSoal.setWaktuPengerjaan(localSoal.getWaktuPengerjaan());
+				redisSoal.setWaktuPengumpulan(localSoal.getWaktuPengumpulan());
+				redisSoal.setIsiSoal(localSoal.getIsiSoal());
+				redisSoal.setNilai(localSoal.getNilai());
+				redisSoalRepo.save(redisSoal);
+				
+				byte[]bytes = objectMapper.writeValueAsBytes(localSoal);
+				String str = new String(bytes);
+				kafkaTemplate.send("sbmdr",str);
+				System.err.println("sending message: "+str);
+				receiveMessage("sbmdr");
+				
 				result="data semester berhasil dimasukkan dengan kode soal: "+cekSoal;
 			}
 		} catch (Exception e) {
@@ -99,6 +131,23 @@ public class SoalService {
 			updateFlag = soalRepository.updateDataSoal(soal.getJenisSoal(),soal.getWaktuPengerjaan(),
 					soal.getWaktuPengumpulan(),soal.getIsiSoal(),soal.getNilai(),kodeSoal);
 			if(updateFlag==1) {
+				
+				soal.setKodeSoal(kodeSoal);
+				
+				redisSoal.setKodeSoal(soal.getKodeSoal());
+				redisSoal.setJenisSoal(soal.getJenisSoal());
+				redisSoal.setWaktuPengerjaan(soal.getWaktuPengerjaan());
+				redisSoal.setWaktuPengumpulan(soal.getWaktuPengumpulan());
+				redisSoal.setIsiSoal(soal.getIsiSoal());
+				redisSoal.setNilai(soal.getNilai());
+				redisSoalRepo.save(redisSoal);
+				
+				byte[]bytes = objectMapper.writeValueAsBytes(soal);
+				String str = new String(bytes);
+				kafkaTemplate.send("sbmdr",str);
+				System.err.println("sending message: "+str);
+				receiveMessage("sbmdr");
+				
 				result="data soal telah diperbaharui dengan kode soal: "+kodeSoal;
 			}
 		} catch (Exception e) {
@@ -106,6 +155,11 @@ public class SoalService {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	@KafkaListener(topics="sbmdr",groupId="sbmdr")
+	public void receiveMessage(String data) {
+		System.err.println("receive message: "+data);
 	}
 
 	public SoalRepository getSoalRepository() {

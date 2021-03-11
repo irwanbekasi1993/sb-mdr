@@ -6,12 +6,18 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sb.mdr.model.Dosen;
 import sb.mdr.model.MataKuliah;
+import sb.mdr.model.redis.RedisMataKuliah;
 import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.MataKuliahRepository;
+import sb.mdr.repository.redis.RedisMataKuliahRepository;
 
 @Service
 public class MataKuliahService {
@@ -21,6 +27,17 @@ public class MataKuliahService {
 
 	private MataKuliah matkul;
 
+	private RedisMataKuliah redisMatkul;
+	
+	@Autowired
+	private RedisMataKuliahRepository redisMatkulRepo;
+	
+	@Autowired
+	private KafkaTemplate<String,String> kafkaTemplate;
+	
+	private ObjectMapper objectMapper;
+	
+	
 	public String insertMatKul(MataKuliah localMatKul) {
 		int increment = 0;
 		int flagInsert = 0;
@@ -28,17 +45,29 @@ public class MataKuliahService {
 		String cekMatKul = matKulRepository.getLastKodeMatKul();
 		if(cekMatKul==null) {
 			increment += 1;
-			localMatKul.setKodeMatkul("DSN" + increment);
+			localMatKul.setKodeMatkul("MK" + increment);
 
 		}else {
 			increment=matKulRepository.hitungMatKul()+1;
-			localMatKul.setKodeMatkul("DSN" + increment);
+			localMatKul.setKodeMatkul("MK" + increment);
 		}
 		try {
 			flagInsert = matKulRepository.insertDataMatKul(localMatKul.getKodeMatkul(), localMatKul.getNamaMatkul(),
 					localMatKul.getSks());
 
 			if(flagInsert==1) {
+				
+				redisMatkul.setKodeMatkul(localMatKul.getKodeMatkul());
+				redisMatkul.setNamaMatkul(localMatKul.getNamaMatkul());
+				redisMatkul.setSks(localMatKul.getSks());
+				redisMatkulRepo.save(redisMatkul);
+				
+				byte[] bytes = objectMapper.writeValueAsBytes(localMatKul);
+				String str = new String(bytes);
+				kafkaTemplate.send("sbmdr",str);
+				System.err.println("sending message: "+str);
+				receiveMessage("sbmdr");
+				
 				result="data matakuliah berhasil dimasukkan dengan kode matakuliah: "+cekMatKul;
 			}
 		} catch (Exception e) {
@@ -46,6 +75,11 @@ public class MataKuliahService {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	@KafkaListener(topics="sbmdr",groupId="sbmdr")
+	public void receiveMessage(String data) {
+		System.err.println("receive message: "+data);
 	}
 
 	public List<MataKuliah> getAllMatKul(int limit) {
@@ -94,6 +128,20 @@ public class MataKuliahService {
 		try {
 			updateFlag = matKulRepository.updateDataMatKul(matKul.getNamaMatkul(),matKul.getSks(), kodeMatKul);
 			if(updateFlag==1) {
+				
+				matKul.setKodeMatkul(kodeMatKul);
+				
+				redisMatkul.setKodeMatkul(matKul.getKodeMatkul());
+				redisMatkul.setNamaMatkul(matKul.getNamaMatkul());
+				redisMatkul.setSks(matKul.getSks());
+				redisMatkulRepo.save(redisMatkul);
+				
+				byte[] bytes = objectMapper.writeValueAsBytes(matKul);
+				String str = new String(bytes);
+				kafkaTemplate.send("sbmdr",str);
+				System.err.println("sending message: "+str);
+				receiveMessage("sbmdr");
+				
 				result="data mata kuliah telah diperbaharui dengan kode mata kuliah: "+kodeMatKul;
 			}
 		} catch (Exception e) {
