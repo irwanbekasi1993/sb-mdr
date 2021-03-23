@@ -66,7 +66,6 @@ public class MataKuliahService {
 				String str = new String(bytes);
 				kafkaTemplate.send("sbmdr",str);
 				System.err.println("sending message: "+str);
-				receiveMessage("sbmdr");
 				
 				result="data matakuliah berhasil dimasukkan dengan kode matakuliah: "+cekMatKul;
 			}
@@ -77,10 +76,6 @@ public class MataKuliahService {
 		return result;
 	}
 	
-	@KafkaListener(topics="sbmdr",groupId="sbmdr")
-	public void receiveMessage(String data) {
-		System.err.println("receive message: "+data);
-	}
 
 	public List<MataKuliah> getAllMatKul(int limit) {
 		List<MataKuliah> listMatKul = new ArrayList<>();
@@ -140,7 +135,6 @@ public class MataKuliahService {
 				String str = new String(bytes);
 				kafkaTemplate.send("sbmdr",str);
 				System.err.println("sending message: "+str);
-				receiveMessage("sbmdr");
 				
 				result="data mata kuliah telah diperbaharui dengan kode mata kuliah: "+kodeMatKul;
 			}

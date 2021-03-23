@@ -80,7 +80,6 @@ public class DosenService {
 				
 				kafkaTemplate.send("sbmdr", str);
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
-				receiveMessage("sbmdr");
 				
 				result = "data dosen berhasil dimasukkan dengan kode dosen: " + cekDosen;
 			}
@@ -156,7 +155,6 @@ public class DosenService {
 				
 				kafkaTemplate.send("sbmdr", str);
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
-				receiveMessage("sbmdr");
 				result = "data dosen telah diperbaharui dengan kode dosen: " + kodeDosen;
 			}
 		} catch (Exception e) {
@@ -166,10 +164,6 @@ public class DosenService {
 		return result;
 	}
 	
-	@KafkaListener(topics="sbmdr",groupId="sbmdr")
-	public void receiveMessage(String data) {
-		System.err.println("receive message: "+data);
-	}
 
 	public DosenRepository getDosenRepository() {
 		return dosenRepository;

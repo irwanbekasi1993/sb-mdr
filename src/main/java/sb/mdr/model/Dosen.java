@@ -86,5 +86,11 @@ public class Dosen implements Serializable{
 		this.statusDosen = statusDosen;
 	}
 	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "Dosen [kodeDosen="+kodeDosen+",namaDosen="+namaDosen+",jenisKelaminDosen="+jenisKelaminDosen+",alamatDosen="+alamatDosen+",statusDosen="+statusDosen+",nohp="+nohp+",email="+email+"]";
+	}
+	
 
 }

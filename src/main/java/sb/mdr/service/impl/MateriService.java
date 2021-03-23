@@ -73,7 +73,6 @@ public class MateriService {
 				String str = new String(bytes);
 				kafkaTemplate.send("sbmdr",str);
 				System.err.println("sending message: "+str);
-				receiveMessage("sbmdr");
 				
 				result = "data materi berhasil dimasukkan dengan kode materi: " + cekMateri;
 			}
@@ -84,10 +83,6 @@ public class MateriService {
 		return result;
 	}
 	
-	@KafkaListener(topics="sbmdr",groupId="sbmdr")
-	public void receiveMessage(String data) {
-		System.err.println("receive message: "+data);
-	}
 
 	public List<Materi> getAllMateri(int limit) {
 		List<Materi> listMateri = new ArrayList<>();
@@ -146,7 +141,6 @@ public class MateriService {
 				String str = new String(bytes);
 				System.err.println("sending message: "+str);
 				kafkaTemplate.send("sbmdr",str);
-				receiveMessage("sbmdr");
 				
 				result = "data materi telah diperbaharui dengan kode materi: " + kodeMateri;
 			}

@@ -69,7 +69,6 @@ public class KelasService {
 				kafkaTemplate.send("sbmdr",str);
 				System.err.println("sending message: "+str);
 				
-				receiveMessage("sbmdr");
 				result="data kelas berhasil dimasukkan dengan kode kelas: "+cekKelas;
 			}
 		} catch (Exception e) {
@@ -140,7 +139,6 @@ public class KelasService {
 				kafkaTemplate.send("sbmdr",str);
 				
 				System.err.println("sending message: "+str);
-				receiveMessage("sbmdr");
 				
 				result="data kelas telah diperbaharui dengan kode kelas: "+kodeKelas;
 			}
@@ -151,10 +149,6 @@ public class KelasService {
 		return result;
 	}
 	
-	@KafkaListener(topics="sbmdr",groupId="sbmdr")
-	public void receiveMessage(String data) {
-		System.err.println("receive message: "+data);
-	}
 
 	public KelasRepository getKelasRepository() {
 		return kelasRepository;
