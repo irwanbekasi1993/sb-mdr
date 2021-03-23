@@ -68,7 +68,6 @@ public class SemesterService {
 				byte[]bytes=objectMapper.writeValueAsBytes(localSemester);
 				String str = new String(bytes);
 				kafkaTemplate.send("sbmdr",str);
-				receiveMessage("sbmdr");
 				System.err.println("sending message: "+str);
 				
 				result="data semester berhasil dimasukkan dengan kode semester: "+cekSemester;
@@ -139,7 +138,6 @@ public class SemesterService {
 				byte[]bytes=objectMapper.writeValueAsBytes(semester);
 				String str = new String(bytes);
 				kafkaTemplate.send("sbmdr",str);
-				receiveMessage("sbmdr");
 				System.err.println("sending message: "+str);
 				
 				result="data semester telah diperbaharui dengan kode semester: "+kodeSemester;
@@ -151,10 +149,6 @@ public class SemesterService {
 		return result;
 	}
 	
-	@KafkaListener(topics="sbmdr",groupId="sbmdr")
-	public void receiveMessage(String data) {
-		System.err.println("receive message: "+data);
-	}
 
 	public SemesterRepository getSemesterRepository() {
 		return semesterRepository;

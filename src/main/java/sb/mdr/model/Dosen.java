@@ -28,8 +28,6 @@ public class Dosen implements Serializable{
 	private String nohp;
 	private String email;
 	
-	
-
 	public String getNohp() {
 		return nohp;
 	}
@@ -84,6 +82,12 @@ public class Dosen implements Serializable{
 
 	public void setStatusDosen(String statusDosen) {
 		this.statusDosen = statusDosen;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "Dosen [kodeDosen="+kodeDosen+",namaDosen="+namaDosen+",jenisKelaminDosen="+jenisKelaminDosen+",alamatDosen="+alamatDosen+",statusDosen="+statusDosen+",nohp="+nohp+",email="+email+"]";
 	}
 	
 

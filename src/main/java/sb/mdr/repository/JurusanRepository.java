@@ -1,21 +1,18 @@
 package sb.mdr.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import sb.mdr.model.Dosen;
 import sb.mdr.model.Jurusan;
-import sb.mdr.model.MataKuliah;
 
 @Repository
-public interface JurusanRepository extends JpaRepository<Jurusan, String> {
+public interface JurusanRepository extends CrudRepository<Jurusan, String> {
 
 	@Modifying
 	@Query(value = "insert into jurusan (kode_jurusan,nama_jurusan) values(:kodeJurusan, :namaJurusan)", nativeQuery = true)

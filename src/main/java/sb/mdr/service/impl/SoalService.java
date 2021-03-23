@@ -73,7 +73,6 @@ public class SoalService {
 				String str = new String(bytes);
 				kafkaTemplate.send("sbmdr",str);
 				System.err.println("sending message: "+str);
-				receiveMessage("sbmdr");
 				
 				result="data semester berhasil dimasukkan dengan kode soal: "+cekSoal;
 			}
@@ -146,7 +145,6 @@ public class SoalService {
 				String str = new String(bytes);
 				kafkaTemplate.send("sbmdr",str);
 				System.err.println("sending message: "+str);
-				receiveMessage("sbmdr");
 				
 				result="data soal telah diperbaharui dengan kode soal: "+kodeSoal;
 			}
@@ -157,10 +155,6 @@ public class SoalService {
 		return result;
 	}
 	
-	@KafkaListener(topics="sbmdr",groupId="sbmdr")
-	public void receiveMessage(String data) {
-		System.err.println("receive message: "+data);
-	}
 
 	public SoalRepository getSoalRepository() {
 		return soalRepository;

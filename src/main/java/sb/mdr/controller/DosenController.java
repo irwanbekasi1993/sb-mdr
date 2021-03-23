@@ -1,6 +1,8 @@
 package sb.mdr.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,10 +26,6 @@ public class DosenController {
 	@Autowired
 	private DosenService dosenService;
 	
-	@Autowired
-	private KafkaTemplate<String,Object> kafkaTemplate;
-	
-		
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataDosen(@RequestBody Dosen dosen) {
 		String flagInsert = dosenService.insertDosen(dosen);
