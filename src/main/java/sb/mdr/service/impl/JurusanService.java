@@ -6,8 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
+/*import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,8 +34,8 @@ public class JurusanService {
 	@Autowired
 	private RedisJurusanRepository redisJurusanRepo;
 	
-	@Autowired
-	private KafkaTemplate<String,String> kafkaTemplate;
+	/*@Autowired
+	private KafkaTemplate<String,String> kafkaTemplate;*/
 	
 	private ObjectMapper mapper;
 
@@ -64,7 +64,7 @@ public class JurusanService {
 				byte[] bytes = mapper.writeValueAsBytes(localJurusan);
 				String str = new String(bytes);
 				
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				result="data jurusan berhasil dimasukkan dengan kode jurusan: "+cekJurusan;
 			}
 		} catch (Exception e) {
@@ -130,7 +130,7 @@ public class JurusanService {
 				
 				byte[]bytes = mapper.writeValueAsBytes(jurusan);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				
 				System.err.println("sending message: "+str);
 				

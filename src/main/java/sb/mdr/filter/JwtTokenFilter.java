@@ -1,6 +1,8 @@
 package sb.mdr.filter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -8,58 +10,79 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import sb.mdr.service.impl.JwtUserDetailsService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import sb.mdr.util.JwtTokenUtil;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter{
 	
-	@Autowired
-	private JwtUserDetailsService jwtUserDetailsService;
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+	
+	@Value("${jwt.userId}")
+	private String userId;
 
+	String username = userId;
+	String jwtToken = null;
+	String requestTokenHeader = null;
+	
+	private String HEADER = "Authorization";
+	private String PREFIX = "Bearer ";
+	
+	@Value("${jwt.secret}")
+	private String SECRET;
+	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		final String requestTokenHeader = request.getHeader("Authorization");
-
-		String username = null;
-		String jwtToken = null;
-		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-			jwtToken = requestTokenHeader.substring(7);
-			try {
-				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} 
-		} else {
-			logger.warn("JWT Token does not begin with Bearer String");
-		}
-
-		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-			UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
-
-			if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-
-				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
-				usernamePasswordAuthenticationToken
-						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+		try {
+			if (checkJWTToken(request, response)) {
+				Claims claims = validateToken(request);
+				if (claims.get("authorities") != null) {
+					setUpSpringAuthentication(claims);
+				} else {
+					SecurityContextHolder.clearContext();
+				}
+			}else {
+				SecurityContextHolder.clearContext();
 			}
+			filterChain.doFilter(request, response);
+		} catch (Exception e) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+			return;
 		}
-		filterChain.doFilter(request, response);
+	}
+	
+	private boolean checkJWTToken(HttpServletRequest request, HttpServletResponse res) {
+		String authenticationHeader = request.getHeader(HEADER);
+		if (authenticationHeader == null || !authenticationHeader.startsWith(PREFIX))
+			return false;
+		return true;
+	}
+	
+	private void setUpSpringAuthentication(Claims claims) {
+		@SuppressWarnings("unchecked")
+		List<String> authorities = (List) claims.get("authorities");
+
+		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
+				authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+		SecurityContextHolder.getContext().setAuthentication(auth);
+
+	}
+	
+	private Claims validateToken(HttpServletRequest request) {
+		String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+		return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
 	}
 
 }

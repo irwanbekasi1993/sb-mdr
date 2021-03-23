@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.kafka.clients.admin.NewTopic;
+/*import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.slf4j.Logger;
+*/import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.annotation.KafkaListener;
+/*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import org.springframework.stereotype.Service;
+*/import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sb.mdr.filter.JwtTokenFilter;
 import sb.mdr.model.Dosen;
 import sb.mdr.model.redis.RedisDosen;
 import sb.mdr.repository.DosenRepository;
@@ -35,15 +36,19 @@ public class DosenService {
 	private RedisDosen redisDosen = new RedisDosen();
 
 	private Dosen dosen;
-
+	
 	@Autowired
+	private JwtTokenFilter jwtTokenFilter;
+
+/*	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
 
 	private KafkaConsumer<String, Dosen> kafkaConsumer;
-	
+*/	
 	private ObjectMapper mapper = new ObjectMapper();
 
 	public String insertDosen(Dosen localDosen) {
+		
 		int increment = 0;
 		int flagInsert = 0;
 		String result = null;
@@ -77,7 +82,7 @@ public class DosenService {
 				
 				System.err.println("sending message: "+str);
 				
-				kafkaTemplate.send("sbmdr", str);
+				/*kafkaTemplate.send("sbmdr", str);*/
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
 				
 				result = "data dosen berhasil dimasukkan dengan kode dosen: " + cekDosen;
@@ -152,7 +157,7 @@ public class DosenService {
 				
 				System.err.println("sending message: "+str);
 				
-				kafkaTemplate.send("sbmdr", str);
+				/*kafkaTemplate.send("sbmdr", str);*/
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
 				result = "data dosen telah diperbaharui dengan kode dosen: " + kodeDosen;
 			}

@@ -3,9 +3,9 @@ package sb.mdr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+/*import org.apache.kafka.clients.consumer.KafkaConsumer;*/
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
+/*import org.springframework.kafka.core.KafkaTemplate;*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,10 +48,10 @@ public class JadwalService {
 	private JurusanRepository jurusanRepository;
 	
 
-	@Autowired
+/*	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
 
-	private KafkaConsumer<String, Dosen> kafkaConsumer;
+	private KafkaConsumer<String, Dosen> kafkaConsumer;*/
 	
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -85,7 +85,7 @@ public class JadwalService {
 				
 				System.err.println("sending message: "+str);
 				
-				kafkaTemplate.send("sbmdr", str);
+				/*kafkaTemplate.send("sbmdr", str);*/
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
 				
 				result = "data dosen berhasil dimasukkan dengan kode dosen: " + cekJadwal;
@@ -128,7 +128,7 @@ public class JadwalService {
 			deleteFlag = jadwalRepository.deleteDataJadwal(kodeJadwal);
 			if (deleteFlag == 1) {
 				result = "data dosen dengan kode dosen: " + kodeJadwal + " telah dihapus";
-				kafkaTemplate.send("sbmdr", result);
+				/*kafkaTemplate.send("sbmdr", result);*/
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -154,7 +154,7 @@ public class JadwalService {
 				
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
 				result = "data dosen telah diperbaharui dengan kode dosen: " + kodeJadwal;
-				kafkaTemplate.send("sbmdr", result);
+				/*kafkaTemplate.send("sbmdr", result);*/
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

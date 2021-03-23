@@ -6,8 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
+/*import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,8 +34,8 @@ public class SemesterService {
 	@Autowired
 	private RedisSemesterRepository redisSemesterRepo;
 	
-	@Autowired
-	private KafkaTemplate<String,String> kafkaTemplate;
+	/*@Autowired
+	private KafkaTemplate<String,String> kafkaTemplate;*/
 	
 	private ObjectMapper objectMapper;
 
@@ -67,7 +67,7 @@ public class SemesterService {
 				
 				byte[]bytes=objectMapper.writeValueAsBytes(localSemester);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				System.err.println("sending message: "+str);
 				
 				result="data semester berhasil dimasukkan dengan kode semester: "+cekSemester;
@@ -137,7 +137,7 @@ public class SemesterService {
 				
 				byte[]bytes=objectMapper.writeValueAsBytes(semester);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				System.err.println("sending message: "+str);
 				
 				result="data semester telah diperbaharui dengan kode semester: "+kodeSemester;

@@ -6,8 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
+/*import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,8 +41,8 @@ public class JawabanService {
 	private RedisJawaban redisJawaban = new RedisJawaban();
 	
 	private ObjectMapper mapper;
-	
-	private KafkaTemplate<String,String> kafkaTemplate;
+	/*
+	private KafkaTemplate<String,String> kafkaTemplate;*/
 
 
 	public String insertJawaban(Jawaban localJawaban) {
@@ -75,9 +75,9 @@ public class JawabanService {
 				
 				System.err.println("sending message: "+str);
 				
-				kafkaTemplate.send("sbmdr", str);
+				/*kafkaTemplate.send("sbmdr", str);*/
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
-				receiveMessage("sbmdr");
+				/*receiveMessage("sbmdr");*/
 				result="data jawaban berhasil dimasukkan dengan kode jawaban: "+cekJawaban;
 			}
 		} catch (Exception e) {
@@ -87,11 +87,11 @@ public class JawabanService {
 		return result;
 	}
 	
-	@KafkaListener(topics="sbmdr",groupId="sbmdr")
+	/*@KafkaListener(topics="sbmdr",groupId="sbmdr")
 	public void receiveMessage(String data) {
 		System.err.println("receive message: "+data);
-	}
-
+	}*/
+	
 	public List<Jawaban> getAllJawaban(int limit) {
 		List<Jawaban> listJawaban= new ArrayList<>();
 		try {
@@ -153,7 +153,7 @@ public class JawabanService {
 				
 				System.err.println("sending message: "+str);
 				
-				kafkaTemplate.send("sbmdr", str);
+				/*kafkaTemplate.send("sbmdr", str);*/
 				result="data soal telah diperbaharui dengan kode soal: "+kodeJawaban;
 			}
 		} catch (Exception e) {

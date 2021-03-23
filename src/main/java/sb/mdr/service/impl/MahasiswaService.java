@@ -6,8 +6,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
+/*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,9 +33,9 @@ public class MahasiswaService {
 	@Autowired
 	private RedisMahasiswaRepository redisMahasiswaRepo;
 	
-	@Autowired
+/*	@Autowired
 	private KafkaTemplate<String,String> kafkaTemplate;
-	
+*/	
 	private ObjectMapper objectMapper;
 
 	public String insertMahasiswa(Mahasiswa localMahasiswa) {
@@ -69,7 +70,7 @@ public class MahasiswaService {
 				
 				byte[]bytes = objectMapper.writeValueAsBytes(localMahasiswa);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				System.err.println("sending message: "+str);
 				
 				result="data mahasiswa berhasil dimasukkan dengan nim: "+cekMahasiswa;
@@ -142,7 +143,7 @@ public class MahasiswaService {
 				
 				byte[]bytes = objectMapper.writeValueAsBytes(mahasiswa);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				
 				System.err.println("sending message: "+str);
 				

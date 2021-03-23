@@ -6,9 +6,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
+/*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+*/import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,9 +34,9 @@ public class KelasService {
 	@Autowired
 	private RedisKelasRepository redisKelasRepo;
 	
-	@Autowired
+/*	@Autowired
 	private KafkaTemplate<String,String> kafkaTemplate;
-	
+*/	
 	private ObjectMapper mapper;
 
 	public String insertKelas(Kelas localKelas) {
@@ -66,7 +66,7 @@ public class KelasService {
 				
 				byte[] bytes = mapper.writeValueAsBytes(localKelas);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				System.err.println("sending message: "+str);
 				
 				result="data kelas berhasil dimasukkan dengan kode kelas: "+cekKelas;
@@ -136,7 +136,7 @@ public class KelasService {
 				
 				byte[] bytes = mapper.writeValueAsBytes(kelas);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				
 				System.err.println("sending message: "+str);
 				

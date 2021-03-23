@@ -6,8 +6,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
+/*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,9 +33,9 @@ public class MataKuliahService {
 	@Autowired
 	private RedisMataKuliahRepository redisMatkulRepo;
 	
-	@Autowired
+/*	@Autowired
 	private KafkaTemplate<String,String> kafkaTemplate;
-	
+*/	
 	private ObjectMapper objectMapper;
 	
 	
@@ -64,7 +65,7 @@ public class MataKuliahService {
 				
 				byte[] bytes = objectMapper.writeValueAsBytes(localMatKul);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				System.err.println("sending message: "+str);
 				
 				result="data matakuliah berhasil dimasukkan dengan kode matakuliah: "+cekMatKul;
@@ -133,7 +134,7 @@ public class MataKuliahService {
 				
 				byte[] bytes = objectMapper.writeValueAsBytes(matKul);
 				String str = new String(bytes);
-				kafkaTemplate.send("sbmdr",str);
+				/*kafkaTemplate.send("sbmdr",str);*/
 				System.err.println("sending message: "+str);
 				
 				result="data mata kuliah telah diperbaharui dengan kode mata kuliah: "+kodeMatKul;
