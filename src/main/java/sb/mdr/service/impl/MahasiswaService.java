@@ -3,9 +3,8 @@ package sb.mdr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 /*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 */
@@ -13,10 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sb.mdr.model.Dosen;
 import sb.mdr.model.Mahasiswa;
 import sb.mdr.model.redis.RedisMahasiswa;
-import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.MahasiswaRepository;
 import sb.mdr.repository.redis.RedisMahasiswaRepository;
 
@@ -33,9 +30,9 @@ public class MahasiswaService {
 	@Autowired
 	private RedisMahasiswaRepository redisMahasiswaRepo;
 	
-/*	@Autowired
-	private KafkaTemplate<String,String> kafkaTemplate;
-*/	
+	@Autowired
+	private KafkaTemplate<String,Object> kafkaTemplate;
+	
 	private ObjectMapper objectMapper;
 
 	public String insertMahasiswa(Mahasiswa localMahasiswa) {
@@ -74,6 +71,7 @@ public class MahasiswaService {
 				System.err.println("sending message: "+str);
 				
 				result="data mahasiswa berhasil dimasukkan dengan nim: "+cekMahasiswa;
+				kafkaTemplate.send("sbmdr","MHS", localMahasiswa);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -87,7 +85,7 @@ public class MahasiswaService {
 		List<Mahasiswa> listMahasiswa = new ArrayList<>();
 		try {
 			listMahasiswa = mahasiswaRepository.selectAllMahasiswa(limit);
-
+			kafkaTemplate.send("sbmdr","MHS", listMahasiswa);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -99,7 +97,7 @@ public class MahasiswaService {
 		Mahasiswa mahasiswa = new Mahasiswa();
 		try {
 			mahasiswa= mahasiswaRepository.getMahasiswaByNim(nim);
-
+			kafkaTemplate.send("sbmdr","MHS", mahasiswa);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -115,6 +113,7 @@ public class MahasiswaService {
 			if(deleteFlag==1) {
 				
 				result="data mahasiswa dengan nim: "+nim+" telah dihapus";
+				kafkaTemplate.send("sbmdr","MHS", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -149,6 +148,7 @@ public class MahasiswaService {
 				
 				
 				result="data mahasiswa telah diperbaharui dengan nim: "+nim;
+				kafkaTemplate.send("sbmdr","MHS", mahasiswa+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

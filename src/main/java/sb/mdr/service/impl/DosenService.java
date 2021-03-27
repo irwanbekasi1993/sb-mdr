@@ -1,15 +1,12 @@
 package sb.mdr.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-/*import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-*/import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 /*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -40,12 +37,14 @@ public class DosenService {
 	@Autowired
 	private JwtTokenFilter jwtTokenFilter;
 
-/*	@Autowired
-	private KafkaTemplate<String, String> kafkaTemplate;
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplate;
 
-	private KafkaConsumer<String, Dosen> kafkaConsumer;
-*/	
+	private KafkaConsumer<String, Object> kafkaConsumer;
+	
 	private ObjectMapper mapper = new ObjectMapper();
+	
+	List<Dosen> listDosen = new ArrayList<>();
 
 	public String insertDosen(Dosen localDosen) {
 		
@@ -82,10 +81,10 @@ public class DosenService {
 				
 				System.err.println("sending message: "+str);
 				
-				/*kafkaTemplate.send("sbmdr", str);*/
+				result = "data dosen berhasil dimasukkan dengan kode dosen: " + cekDosen;
+				kafkaTemplate.send("sbmdr","DSN", result);
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
 				
-				result = "data dosen berhasil dimasukkan dengan kode dosen: " + cekDosen;
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -95,10 +94,10 @@ public class DosenService {
 	}
 
 	public List<Dosen> getAllDosen(int limit) {
-		List<Dosen> listDosen = new ArrayList<>();
+		
 		try {
 			listDosen = dosenRepository.selectAllDosen(limit);
-
+			kafkaTemplate.send("sbmdr","DSN", listDosen);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -110,7 +109,7 @@ public class DosenService {
 		Dosen dosen = new Dosen();
 		try {
 			dosen = dosenRepository.getDosenByKodeDosen(kodeDosen);
-
+			kafkaTemplate.send("sbmdr","DSN", dosen);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -127,6 +126,7 @@ public class DosenService {
 				redisDosen.setKodeDosen(kodeDosen);
 				redisDosenRepo.deleteById(redisDosen.getKodeDosen());
 				result = "data dosen dengan kode dosen: " + kodeDosen + " telah dihapus";
+				kafkaTemplate.send("sbmdr","DSN", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -160,6 +160,7 @@ public class DosenService {
 				/*kafkaTemplate.send("sbmdr", str);*/
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
 				result = "data dosen telah diperbaharui dengan kode dosen: " + kodeDosen;
+				kafkaTemplate.send("sbmdr","DSN", dosen+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

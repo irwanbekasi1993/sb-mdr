@@ -3,23 +3,16 @@ package sb.mdr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 /*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sb.mdr.model.Dosen;
-import sb.mdr.model.MataKuliah;
-import sb.mdr.model.Semester;
 import sb.mdr.model.Soal;
 import sb.mdr.model.redis.RedisSoal;
-import sb.mdr.repository.DosenRepository;
-import sb.mdr.repository.MataKuliahRepository;
-import sb.mdr.repository.SemesterRepository;
 import sb.mdr.repository.SoalRepository;
 import sb.mdr.repository.redis.RedisSoalRepository;
 
@@ -36,9 +29,9 @@ public class SoalService {
 	@Autowired
 	private RedisSoalRepository redisSoalRepo;
 	
-	/*@Autowired
-	private KafkaTemplate<String,String> kafkaTemplate;
-	*/
+	@Autowired
+	private KafkaTemplate<String,Object> kafkaTemplate;
+	
 	private ObjectMapper objectMapper;
 	
 
@@ -75,6 +68,7 @@ public class SoalService {
 				System.err.println("sending message: "+str);
 				
 				result="data semester berhasil dimasukkan dengan kode soal: "+cekSoal;
+				kafkaTemplate.send("sbmdr","TGS", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -87,7 +81,7 @@ public class SoalService {
 		List<Soal> listSoal= new ArrayList<>();
 		try {
 			listSoal = soalRepository.selectAllSoal(limit);
-
+			kafkaTemplate.send("sbmdr","DSN", listSoal);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -99,7 +93,7 @@ public class SoalService {
 		Soal soal = new Soal();
 		try {
 			soal= soalRepository.getSoalByKodeSoal(kodeSoal);
-
+			kafkaTemplate.send("sbmdr","TGS", soal);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -115,6 +109,7 @@ public class SoalService {
 			if(deleteFlag==1) {
 				
 				result="data soal dengan kode soal: "+kodeSoal+" telah dihapus";
+				kafkaTemplate.send("sbmdr","TGS", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -147,6 +142,7 @@ public class SoalService {
 				System.err.println("sending message: "+str);
 				
 				result="data soal telah diperbaharui dengan kode soal: "+kodeSoal;
+				kafkaTemplate.send("sbmdr","TGS", soal+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

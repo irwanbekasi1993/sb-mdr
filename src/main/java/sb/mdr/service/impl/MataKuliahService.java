@@ -3,9 +3,8 @@ package sb.mdr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 /*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 */
@@ -13,10 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sb.mdr.model.Dosen;
 import sb.mdr.model.MataKuliah;
 import sb.mdr.model.redis.RedisMataKuliah;
-import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.MataKuliahRepository;
 import sb.mdr.repository.redis.RedisMataKuliahRepository;
 
@@ -33,9 +30,9 @@ public class MataKuliahService {
 	@Autowired
 	private RedisMataKuliahRepository redisMatkulRepo;
 	
-/*	@Autowired
-	private KafkaTemplate<String,String> kafkaTemplate;
-*/	
+	@Autowired
+	private KafkaTemplate<String,Object> kafkaTemplate;
+	
 	private ObjectMapper objectMapper;
 	
 	
@@ -69,6 +66,7 @@ public class MataKuliahService {
 				System.err.println("sending message: "+str);
 				
 				result="data matakuliah berhasil dimasukkan dengan kode matakuliah: "+cekMatKul;
+				kafkaTemplate.send("sbmdr","MK", result+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -82,7 +80,7 @@ public class MataKuliahService {
 		List<MataKuliah> listMatKul = new ArrayList<>();
 		try {
 			listMatKul = matKulRepository.selectAllMatKul(limit);
-
+			kafkaTemplate.send("sbmdr","MK", listMatKul);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -94,7 +92,7 @@ public class MataKuliahService {
 		MataKuliah matKul = new MataKuliah();
 		try {
 			matKul= matKulRepository.getMatkulByKodeMatKul(kodeMatKul);
-
+			kafkaTemplate.send("sbmdr","MK", matKul);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -110,6 +108,7 @@ public class MataKuliahService {
 			if(deleteFlag==1) {
 				
 				result="data mata kuliah dengan kode mata kuliah: "+kodeMatKul+" telah dihapus";
+				kafkaTemplate.send("sbmdr","MK", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -138,6 +137,7 @@ public class MataKuliahService {
 				System.err.println("sending message: "+str);
 				
 				result="data mata kuliah telah diperbaharui dengan kode mata kuliah: "+kodeMatKul;
+				kafkaTemplate.send("sbmdr","MK", matKul+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

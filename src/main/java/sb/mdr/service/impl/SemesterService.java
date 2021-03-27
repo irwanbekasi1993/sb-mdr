@@ -3,21 +3,16 @@ package sb.mdr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 /*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sb.mdr.model.Dosen;
-import sb.mdr.model.MataKuliah;
 import sb.mdr.model.Semester;
 import sb.mdr.model.redis.RedisSemester;
-import sb.mdr.repository.DosenRepository;
-import sb.mdr.repository.MataKuliahRepository;
 import sb.mdr.repository.SemesterRepository;
 import sb.mdr.repository.redis.RedisSemesterRepository;
 
@@ -34,8 +29,8 @@ public class SemesterService {
 	@Autowired
 	private RedisSemesterRepository redisSemesterRepo;
 	
-	/*@Autowired
-	private KafkaTemplate<String,String> kafkaTemplate;*/
+	@Autowired
+	private KafkaTemplate<String,Object> kafkaTemplate;
 	
 	private ObjectMapper objectMapper;
 
@@ -71,6 +66,7 @@ public class SemesterService {
 				System.err.println("sending message: "+str);
 				
 				result="data semester berhasil dimasukkan dengan kode semester: "+cekSemester;
+				kafkaTemplate.send("sbmdr","SMS", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -83,7 +79,7 @@ public class SemesterService {
 		List<Semester> listSemester = new ArrayList<>();
 		try {
 			listSemester = semesterRepository.selectAllSemester(limit);
-
+			kafkaTemplate.send("sbmdr","SMS", listSemester);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -95,7 +91,7 @@ public class SemesterService {
 		Semester semester = new Semester();
 		try {
 			semester= semesterRepository.getSemesterByKodeSemester(kodeSemester);
-
+			kafkaTemplate.send("sbmdr","DSN", semester);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -111,6 +107,7 @@ public class SemesterService {
 			if(deleteFlag==1) {
 				
 				result="data semester dengan kode semester: "+kodeSemester+" telah dihapus";
+				kafkaTemplate.send("sbmdr","SMS", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -141,6 +138,7 @@ public class SemesterService {
 				System.err.println("sending message: "+str);
 				
 				result="data semester telah diperbaharui dengan kode semester: "+kodeSemester;
+				kafkaTemplate.send("sbmdr","SMS", semester+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

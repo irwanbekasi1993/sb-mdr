@@ -3,22 +3,17 @@ package sb.mdr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 /*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sb.mdr.model.Dosen;
 import sb.mdr.model.Jurusan;
-import sb.mdr.model.MataKuliah;
 import sb.mdr.model.redis.RedisJurusan;
-import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.JurusanRepository;
-import sb.mdr.repository.MataKuliahRepository;
 import sb.mdr.repository.redis.RedisJurusanRepository;
 
 @Service
@@ -34,8 +29,8 @@ public class JurusanService {
 	@Autowired
 	private RedisJurusanRepository redisJurusanRepo;
 	
-	/*@Autowired
-	private KafkaTemplate<String,String> kafkaTemplate;*/
+	@Autowired
+	private KafkaTemplate<String,Object> kafkaTemplate;
 	
 	private ObjectMapper mapper;
 
@@ -66,6 +61,7 @@ public class JurusanService {
 				
 				/*kafkaTemplate.send("sbmdr",str);*/
 				result="data jurusan berhasil dimasukkan dengan kode jurusan: "+cekJurusan;
+				kafkaTemplate.send("sbmdr","FAK", localJurusan+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -79,7 +75,7 @@ public class JurusanService {
 		List<Jurusan> listJurusan = new ArrayList<>();
 		try {
 			listJurusan = jurusanRepository.selectAllJurusan(limit);
-
+			kafkaTemplate.send("sbmdr","FAK", listJurusan);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -91,7 +87,7 @@ public class JurusanService {
 		Jurusan jurusan = new Jurusan();
 		try {
 			jurusan= jurusanRepository.getJurusanByKodeJurusan(kodeJurusan);
-
+			kafkaTemplate.send("sbmdr","FAK", jurusan);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -107,6 +103,7 @@ public class JurusanService {
 			if(deleteFlag==1) {
 				
 				result="data jurusan dengan kode jurusan: "+kodeJurusan+" telah dihapus";
+				kafkaTemplate.send("sbmdr","FAK", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -136,6 +133,7 @@ public class JurusanService {
 				
 				
 				result="data jurusan telah diperbaharui dengan kode jurusan: "+kodeJurusan;
+				kafkaTemplate.send("sbmdr","DSN", jurusan+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

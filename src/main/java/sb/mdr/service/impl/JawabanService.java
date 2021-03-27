@@ -3,28 +3,17 @@ package sb.mdr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 /*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;*/
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sb.mdr.model.Dosen;
 import sb.mdr.model.Jawaban;
-import sb.mdr.model.MataKuliah;
-import sb.mdr.model.Semester;
-import sb.mdr.model.Soal;
-import sb.mdr.model.redis.RedisDosen;
 import sb.mdr.model.redis.RedisJawaban;
-import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.JawabanRepository;
-import sb.mdr.repository.MataKuliahRepository;
-import sb.mdr.repository.SemesterRepository;
-import sb.mdr.repository.SoalRepository;
-import sb.mdr.repository.redis.RedisDosenRepository;
 import sb.mdr.repository.redis.RedisJawabanRepository;
 
 @Service
@@ -41,8 +30,8 @@ public class JawabanService {
 	private RedisJawaban redisJawaban = new RedisJawaban();
 	
 	private ObjectMapper mapper;
-	/*
-	private KafkaTemplate<String,String> kafkaTemplate;*/
+	
+	private KafkaTemplate<String,Object> kafkaTemplate;
 
 
 	public String insertJawaban(Jawaban localJawaban) {
@@ -79,6 +68,7 @@ public class JawabanService {
 				//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
 				/*receiveMessage("sbmdr");*/
 				result="data jawaban berhasil dimasukkan dengan kode jawaban: "+cekJawaban;
+				kafkaTemplate.send("sbmdr","JWB", localJawaban+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -96,7 +86,7 @@ public class JawabanService {
 		List<Jawaban> listJawaban= new ArrayList<>();
 		try {
 			listJawaban = jawabanRepository.selectAllJawaban(limit);
-
+			kafkaTemplate.send("sbmdr","JWB", listJawaban);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -108,7 +98,7 @@ public class JawabanService {
 		Jawaban jawaban = new Jawaban();
 		try {
 			jawaban= jawabanRepository.getJawabanByKodeJawaban(kodeJawaban);
-
+			kafkaTemplate.send("sbmdr","JWB", jawaban);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -124,6 +114,7 @@ public class JawabanService {
 			if(deleteFlag==1) {
 				
 				result="data jawaban dengan kode jawaban: "+kodeJawaban+" telah dihapus";
+				kafkaTemplate.send("sbmdr","JWB", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -155,6 +146,7 @@ public class JawabanService {
 				
 				/*kafkaTemplate.send("sbmdr", str);*/
 				result="data soal telah diperbaharui dengan kode soal: "+kodeJawaban;
+				kafkaTemplate.send("sbmdr","JWB", jawaban+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception

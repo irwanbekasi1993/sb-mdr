@@ -3,22 +3,17 @@ package sb.mdr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 /*import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 */import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sb.mdr.model.Dosen;
 import sb.mdr.model.Kelas;
-import sb.mdr.model.MataKuliah;
 import sb.mdr.model.redis.RedisKelas;
-import sb.mdr.repository.DosenRepository;
 import sb.mdr.repository.KelasRepository;
-import sb.mdr.repository.MataKuliahRepository;
 import sb.mdr.repository.redis.RedisKelasRepository;
 
 @Service
@@ -34,9 +29,9 @@ public class KelasService {
 	@Autowired
 	private RedisKelasRepository redisKelasRepo;
 	
-/*	@Autowired
-	private KafkaTemplate<String,String> kafkaTemplate;
-*/	
+	@Autowired
+	private KafkaTemplate<String,Object> kafkaTemplate;
+	
 	private ObjectMapper mapper;
 
 	public String insertKelas(Kelas localKelas) {
@@ -70,6 +65,7 @@ public class KelasService {
 				System.err.println("sending message: "+str);
 				
 				result="data kelas berhasil dimasukkan dengan kode kelas: "+cekKelas;
+				kafkaTemplate.send("sbmdr","KLS", localKelas+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -82,7 +78,7 @@ public class KelasService {
 		List<Kelas> listKelas = new ArrayList<>();
 		try {
 			listKelas = kelasRepository.selectAllKelas(limit);
-
+			kafkaTemplate.send("sbmdr","KLS", listKelas);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -94,7 +90,7 @@ public class KelasService {
 		Kelas kelas = new Kelas();
 		try {
 			kelas= kelasRepository.getKelasByKodeKelas(kodeMatKul);
-
+			kafkaTemplate.send("sbmdr","KLS", kelas);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -110,6 +106,7 @@ public class KelasService {
 			if(deleteFlag==1) {
 				
 				result="data kelas dengan kode kelas: "+kodeKelas+" telah dihapus";
+				kafkaTemplate.send("sbmdr","KLS", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -141,6 +138,7 @@ public class KelasService {
 				System.err.println("sending message: "+str);
 				
 				result="data kelas telah diperbaharui dengan kode kelas: "+kodeKelas;
+				kafkaTemplate.send("sbmdr","KLS", kelas+"\n"+result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
