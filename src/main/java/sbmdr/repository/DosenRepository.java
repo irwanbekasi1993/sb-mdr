@@ -1,11 +1,10 @@
 package sbmdr.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sbmdr.model.Dosen;
 
 @Repository
-public interface DosenRepository extends JpaRepository<Dosen, String> {
+public interface DosenRepository extends CrudRepository<Dosen, String> {
 
 	@Modifying
 	@Query(value = "insert into dosen (nip,nama_dosen,email,status_dosen) values(:nip, :namaDosen,:email,:statusDosen)", nativeQuery = true)
