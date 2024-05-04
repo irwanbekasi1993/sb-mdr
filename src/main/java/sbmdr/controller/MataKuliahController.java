@@ -28,14 +28,13 @@ public class MataKuliahController {
 	@Autowired
 	private MataKuliahService matKulService;
 
-				@Value("${sbmdr.key}")
-private String key;
+	private String result;
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataMatKul(@RequestBody MataKuliah matkul) {
-		String flagInsert = matKulService.insertMatKul(matkul);
-		return flagInsert;
+		result = matKulService.insertMatKul(matkul);
+		return result;
 	}
 
 	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
@@ -53,15 +52,15 @@ private String key;
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/update/{kodeMatKul}", method = RequestMethod.PUT)
 	public String updateDataMatKul(@RequestBody MataKuliah matkul, @PathVariable("kodeMatKul") String kodeMatKul) {
-		String flagUpdate = matKulService.updateMatKul(matkul,kodeMatKul);
-		return flagUpdate;
+		result = matKulService.updateMatKul(matkul,kodeMatKul);
+		return result;
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/delete/{kodeMatKul}", method = RequestMethod.DELETE)
 	public String deleteDataMatKul(@PathVariable("kodeMatKul") String kodeMatKul) {
-		String flagUpdate = matKulService.deleteMatKul(kodeMatKul);
-		return flagUpdate;
+		result = matKulService.deleteMatKul(kodeMatKul);
+		return result;
 	}
 
 }

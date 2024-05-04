@@ -39,21 +39,21 @@ public class SemesterService {
 	
 	private ObjectMapper objectMapper;
 
+	private String result;
+
+
 	public String insertSemester(Semester localSemester) {
-		String result=null;
 		
 		try {
 			Semester cek = getSemester(localSemester.getKodeSemester());
 			if(cek==null){
 				semesterRepository.insertDataSemester(localSemester.getKodeSemester(), localSemester.getPeriodeMulai(),localSemester.getPeriodeSelesai());
-
-				redisSemester = new RedisSemester();	
+	
 				redisSemester.setKodeSemester(localSemester.getKodeSemester());
 				redisSemester.setPeriodeMulai(localSemester.getPeriodeMulai());
 				redisSemester.setPeriodeSelesai(localSemester.getPeriodeSelesai());
 				redisSemesterRepo.save(redisSemester);
 				
-				objectMapper = new ObjectMapper();
 				byte[]bytes=objectMapper.writeValueAsBytes(localSemester);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);
@@ -97,7 +97,6 @@ public class SemesterService {
 	}
 
 	public String deleteSemester(String kodeSemester) {
-		String result=null;
 		try {
 			Semester cekSMS = getSemester(kodeSemester);
 			if(cekSMS!=null){
@@ -117,21 +116,17 @@ public class SemesterService {
 	}
 
 	public String updateSemester(Semester inputSemester,String kodeSemester) {
-		
-		String result=null;
 		try {
 			Semester cekSMS = getSemester(kodeSemester);
 			if(cekSMS!=null){
 				 semesterRepository.updateDataSemester(inputSemester.getPeriodeMulai(),inputSemester.getPeriodeSelesai(),kodeSemester);
 				
-				redisSemester = new RedisSemester();
 				semester.setKodeSemester(kodeSemester);
 				redisSemester.setKodeSemester(semester.getKodeSemester());
 				redisSemester.setPeriodeMulai(semester.getPeriodeMulai());
 				redisSemester.setPeriodeSelesai(semester.getPeriodeSelesai());
 				redisSemesterRepo.save(redisSemester);
 				
-				objectMapper = new ObjectMapper();
 				byte[]bytes=objectMapper.writeValueAsBytes(semester);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);
@@ -159,13 +154,6 @@ public class SemesterService {
 		this.semesterRepository = semesterRepository;
 	}
 
-	public Semester getSemester() {
-		return semester;
-	}
-
-	public void setSemester(Semester semester) {
-		this.semester = semester;
-	}
 
 
 

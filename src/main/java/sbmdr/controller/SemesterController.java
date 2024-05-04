@@ -29,11 +29,13 @@ public class SemesterController {
 	@Autowired
 	private SemesterService semesterService;
 
+	private String result;
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataSemester(@RequestBody Semester semester) {
-		String flagInsert = semesterService.insertSemester(semester);
-		return flagInsert;
+		result = semesterService.insertSemester(semester);
+		return result;
 	}
 
 	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
@@ -52,15 +54,15 @@ public class SemesterController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/update/{kodeSemester}", method = RequestMethod.PUT)
 	public String updateDataSemester(@RequestBody Semester semester, @PathVariable("kodeSemester") String kodeSemester) {
-		String flagUpdate = semesterService.updateSemester(semester,kodeSemester);
-		return flagUpdate;
+		result = semesterService.updateSemester(semester,kodeSemester);
+		return result;
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/delete/{kodeSemester}", method = RequestMethod.DELETE)
 	public String deleteDataSemester(@PathVariable("kodeSemester") String kodeSemester) {
-		String flagUpdate = semesterService.deleteSemester(kodeSemester);
-		return flagUpdate;
+		result = semesterService.deleteSemester(kodeSemester);
+		return result;
 	}
 
 }

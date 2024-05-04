@@ -33,61 +33,14 @@ public class MahasiswaService {
 	
 	@Autowired
 	private RedisMahasiswaRepository redisMahasiswaRepo;
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private RoleRepository roleRepository;
 	
 	// @Autowired
 	// private KafkaTemplate<String,String> kafkaTemplate;
 	
 	private ObjectMapper objectMapper;
 
-
-	// public String insertMahasiswa(Mahasiswa localMahasiswa) {
-	// 	int increment = 0;
-	// 	int flagInsert = 0;
-	// 	String result=null;
-	// 	String cekMahasiswa = mahasiswaRepository.getLastNim();
-	// 	if(cekMahasiswa==null) {
-	// 		increment += 1;
-	// 		localMahasiswa.setNim("MHS" + increment);
-
-	// 	}else {
-	// 		increment=mahasiswaRepository.hitungMahasiswa()+1;
-	// 		localMahasiswa.setNim("MHS" + increment);
-	// 	}
-	// 	try {
-	// 		if(roleRepository.findByName("ROLE_MAHASISWA").isPresent()){
-	// 			flagInsert = mahasiswaRepository.insertDataMahasiswa(localMahasiswa.getNim(), localMahasiswa.getNamaMahasiswa(),
-	// 			localMahasiswa.getEmail());
-
-	// 	if(flagInsert==1) {
-			
-	// 		redisMahasiswa.setNim(localMahasiswa.getNim());
-	// 		redisMahasiswa.setNamaMahasiswa(localMahasiswa.getNamaMahasiswa());
-	// 		redisMahasiswa.setEmail(localMahasiswa.getEmail());
-	// 		redisMahasiswaRepo.save(redisMahasiswa);
-			
-	// 		byte[]bytes = objectMapper.writeValueAsBytes(localMahasiswa);
-	// 		String str = new String(bytes);
-	// 		// kafkaTemplate.send("sbmdr",str);
-	// 		System.err.println("sending message: "+str);
-			
-	// 		result="data mahasiswa berhasil dimasukkan dengan nim: "+cekMahasiswa;
-	// 	}
-	// 		}
-			
-	// 	} catch (Exception e) {
-	// 		// TODO: handle exception
-	// 		e.printStackTrace();
-	// 	}
-	// 	return result;
-	// }
+	private String result;
 	
-
 	public List<Mahasiswa> getAllMahasiswa(int limit) {
 		List<Mahasiswa> listMahasiswa = new ArrayList<>();
 		try {
@@ -113,7 +66,6 @@ public class MahasiswaService {
 	}
 
 	public String deleteMahasiswa(String nim) {
-		String result=null;
 		try {
 			Mahasiswa cekMhs = getMahasiswa(nim);
 			if(cekMhs!=null){
@@ -133,15 +85,12 @@ public class MahasiswaService {
 	}
 
 	public String updateMahasiswa(Mahasiswa mahasiswa,String nim) {
-		String result=null;
 		try {
 			Mahasiswa cekMhs = getMahasiswa(nim);
 			if(cekMhs!=null){
 				mahasiswaRepository.updateDataMahasiswa(mahasiswa.getNamaMahasiswa(),mahasiswa.getJenisKelaminMahasiswa(),
 					mahasiswa.getAlamatMahasiswa(),mahasiswa.getNohp(), mahasiswa.getEmail(),mahasiswa.getStatusMahasiswa(), nim);
-			
 				
-				redisMahasiswa = new RedisMahasiswa();
 				redisMahasiswa.setNim(nim);
 				redisMahasiswa.setNamaMahasiswa(mahasiswa.getNamaMahasiswa());
 				redisMahasiswa.setJenisKelaminMahasiswa(mahasiswa.getJenisKelaminMahasiswa());
@@ -151,7 +100,6 @@ public class MahasiswaService {
 				redisMahasiswa.setStatusMahasiswa(mahasiswa.getStatusMahasiswa());
 				redisMahasiswaRepo.save(redisMahasiswa);
 				
-				objectMapper = new ObjectMapper();
 				mahasiswa.setNim(nim);
 				byte[]bytes = objectMapper.writeValueAsBytes(mahasiswa);
 				String str = new String(bytes);

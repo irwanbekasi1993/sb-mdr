@@ -27,6 +27,8 @@ public class MahasiswaController {
 	@Autowired
 	private MahasiswaService mahasiswaService;
 
+	private String result;
+
 	// @PreAuthorize("hasRole('MAHASISWA')")
 	// @RequestMapping(value = "/insert", method = RequestMethod.POST)
 	// public String insertDataDosen(@RequestBody Mahasiswa mahasiswa) {
@@ -50,15 +52,15 @@ public class MahasiswaController {
 	@PreAuthorize("hasRole('MAHASISWA')")
 	@RequestMapping(value = "/update/{nim}", method = RequestMethod.PUT)
 	public String updateDataMahasiswa(@RequestBody Mahasiswa mahasiswa, @PathVariable("nim") String nim) {
-		String flagUpdate = mahasiswaService.updateMahasiswa(mahasiswa,nim);
-		return flagUpdate;
+		result = mahasiswaService.updateMahasiswa(mahasiswa,nim);
+		return result;
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/delete/{nim}", method = RequestMethod.DELETE)
 	public String deleteDataMahasiswa(@PathVariable("nim") String nim) {
-		String flagUpdate = mahasiswaService.deleteMahasiswa(nim);
-		return flagUpdate;
+		result = mahasiswaService.deleteMahasiswa(nim);
+		return result;
 	}
 
 }

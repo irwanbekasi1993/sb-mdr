@@ -40,61 +40,8 @@ public class DosenService {
 	
 	private ObjectMapper mapper = new ObjectMapper();
 
-	@Autowired
-	private MataKuliahService mataKuliahService;
-
-	@Autowired
-	private JurusanService jurusanService;
-
-
-	// @Autowired
-	// private UserRepository userRepository;
-
-	// @Autowired
-	// private RoleRepository roleRepository;
-
-	// public String insertDosen(Dosen localDosen) {
-	// 	int increment = 0;
-	// 	int flagInsert = 0;
-	// 	String result = null;
-	// 	String cekDosen = dosenRepository.getLastKodeDosen();
-	// 	if (cekDosen == null) {
-	// 		increment += 1;
-	// 		localDosen.setKodeDosen("DSN" + increment);
-
-	// 	} else {
-	// 		increment = dosenRepository.hitungDosen() + 1;
-	// 		localDosen.setKodeDosen("DSN" + increment);
-	// 	}
-	// 	try {
-	// 		if(roleRepository.findByName("ROLE_DOSEN").isPresent()){
-	// 		flagInsert = dosenRepository.insertDataDosen(localDosen.getKodeDosen(), localDosen.getNamaDosen(),
-	// 				localDosen.getEmail());
-
-	// 		redisDosen.setKodeDosen(localDosen.getKodeDosen());
-	// 		redisDosen.setNamaDosen(localDosen.getNamaDosen());
-	// 		redisDosen.setEmail(localDosen.getEmail());
-	// 		redisDosenRepo.save(redisDosen);
-
-	// 		if (flagInsert == 1) {
-				
-	// 			byte[]bytes = mapper.writeValueAsBytes(dosen);
-	// 			String str= new String(bytes);
-				
-	// 			System.err.println("sending message: "+str);
-				
-	// 			// kafkaTemplate.send("sbmdr", str);
-	// 			//kafkaConsumer.subscribe(Collections.singletonList("sbmdr"));
-				
-	// 			result = "data dosen berhasil dimasukkan dengan kode dosen: " + cekDosen;
-	// 		}
-	// 	}
-	// 	} catch (Exception e) {
-	// 		// TODO: handle exception
-	// 		e.printStackTrace();
-	// 	}
-	// 	return result;
-	// }
+	private String result;
+	
 
 	public List<Dosen> getAllDosen(int limit) {
 		List<Dosen> listDosen = new ArrayList<>();
@@ -121,7 +68,7 @@ public class DosenService {
 	}
 
 	public String deleteDosen(String nip) {
-		String result = null;
+		
 		try {
 			Dosen cek = getDosen(nip);
 			if(cek!=null){
@@ -140,7 +87,7 @@ public class DosenService {
 	}
 
 	public String updateDosen(Dosen dosen, String nip) {
-		String result = null;
+		
 		try {
 			Dosen cek = getDosen(nip);
 			if(cek!=null){

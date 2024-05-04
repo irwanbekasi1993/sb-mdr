@@ -38,9 +38,9 @@ public class KelasService {
 	
 	private ObjectMapper mapper;
 
+	private String result;
 
 	public String insertKelas(Kelas localKelas) {
-		String result=null;
 		
 		try {
 			Kelas cek = getKelas(localKelas.getNamaKelas());
@@ -48,14 +48,12 @@ public class KelasService {
 				kelasRepository.insertDataKelas(localKelas.getKodeKelas(), localKelas.getNamaKelas(),
 					localKelas.getKapasitasKelas(),localKelas.getJenisKelas());
 
-				redisKelas = new RedisKelas();
 				redisKelas.setKodeKelas(localKelas.getKodeKelas());
 				redisKelas.setNamaKelas(localKelas.getNamaKelas());
 				redisKelas.setKapasitasKelas(localKelas.getKapasitasKelas());
 				redisKelas.setJenisKelas(localKelas.getJenisKelas());
 				redisKelasRepo.save(redisKelas);
 				
-				mapper = new ObjectMapper();
 				byte[] bytes = mapper.writeValueAsBytes(localKelas);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);
@@ -100,7 +98,6 @@ public class KelasService {
 	}
 
 	public String deleteKelas(String kodeKelas) {
-		String result=null;
 		try {
 			Kelas cek = getKelas(kodeKelas);
 			if(cek!=null){
@@ -120,23 +117,19 @@ public class KelasService {
 	}
 
 	public String updateKelas(Kelas kelas,String namaKelas) {
-		String result=null;
 		try {
 			Kelas cekKls = getKelas(namaKelas);
 			if(cekKls!=null) {
 			
 			kelasRepository.updateDataKelas(kelas.getNamaKelas(),kelas.getKapasitasKelas(), 
 					kelas.getJenisKelas(),namaKelas);
-			
-			
-				redisKelas = new RedisKelas();
+
 				redisKelas.setKodeKelas(kelas.getKodeKelas());
 				redisKelas.setNamaKelas(kelas.getNamaKelas());
 				redisKelas.setKapasitasKelas(kelas.getKapasitasKelas());
 				redisKelas.setJenisKelas(kelas.getJenisKelas());
 				redisKelasRepo.save(redisKelas);
 				
-				mapper = new ObjectMapper();
 				byte[] bytes = mapper.writeValueAsBytes(kelas);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);

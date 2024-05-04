@@ -39,9 +39,9 @@ public class SoalService {
 	
 	private ObjectMapper objectMapper;
 	
+	private String result;
 
 	public String insertSoal(Soal localSoal) {
-		String result=null;
 		
 		try {
 			Soal cek = getSoal(localSoal.getKodeSoal());
@@ -49,15 +49,12 @@ public class SoalService {
 				 soalRepository.insertDataSoal(localSoal.getKodeSoal(), localSoal.getJenisSoal(),
 					localSoal.getIsiSoal(),localSoal.getNilai());
 
-				
-				redisSoal = new RedisSoal();
 				redisSoal.setKodeSoal(localSoal.getKodeSoal());
 				redisSoal.setJenisSoal(localSoal.getJenisSoal());
 				redisSoal.setIsiSoal(localSoal.getIsiSoal());
 				redisSoal.setNilai(localSoal.getNilai());
 				redisSoalRepo.save(redisSoal);
 				
-				objectMapper = new ObjectMapper(); 
 				byte[]bytes = objectMapper.writeValueAsBytes(localSoal);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);
@@ -101,12 +98,9 @@ public class SoalService {
 	}
 
 	public String deleteSoal(String kodeSoal) {
-		String result=null;
 		try {
 			Soal cek = getSoal(kodeSoal);
 			if(cek!=null){
-
-			
 			soalRepository.deleteDataSoal(kodeSoal);
 				redisSoalRepo.delete(redisSoalRepo.findByKodeSoal(kodeSoal));
 				result="data soal dengan kode soal: "+kodeSoal+" telah dihapus";
@@ -121,21 +115,18 @@ public class SoalService {
 	}
 
 	public String updateSoal(Soal soal,String kodeSoal) {
-		String result=null;
 		try {
 			Soal cek = getSoal(kodeSoal);
 			if(cek!=null){
 			 soalRepository.updateDataSoal(soal.getJenisSoal(),soal.getIsiSoal(),soal.getNilai(),kodeSoal);
 				
 				soal.setKodeSoal(kodeSoal);
-				redisSoal = new RedisSoal();
 				redisSoal.setKodeSoal(soal.getKodeSoal());
 				redisSoal.setJenisSoal(soal.getJenisSoal());
 				redisSoal.setIsiSoal(soal.getIsiSoal());
 				redisSoal.setNilai(soal.getNilai());
 				redisSoalRepo.save(redisSoal);
 				
-				objectMapper = new ObjectMapper();
 				byte[]bytes = objectMapper.writeValueAsBytes(soal);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);

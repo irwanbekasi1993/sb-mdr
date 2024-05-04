@@ -25,6 +25,8 @@ public class DosenController {
 
 	@Autowired
 	private DosenService dosenService;
+
+	private String result;
 	
 	// @PreAuthorize("hasRole('DOSEN')")
 	// @RequestMapping(value = "/insert", method = RequestMethod.POST)
@@ -48,15 +50,15 @@ public class DosenController {
 	@PreAuthorize("hasRole('DOSEN')")
 	@RequestMapping(value = "/update/{kodeDosen}", method = RequestMethod.PUT)
 	public String updateDataDosen(@RequestBody Dosen dosen, @PathVariable("kodeDosen") String kodeDosen) {
-		String flagUpdate = dosenService.updateDosen(dosen,kodeDosen);
-		return flagUpdate;
+		result = dosenService.updateDosen(dosen,kodeDosen);
+		return result;
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/delete/{kodeDosen}", method = RequestMethod.DELETE)
 	public String deleteDataDosen(@PathVariable("kodeDosen") String kodeDosen) {
-		String flagUpdate = dosenService.deleteDosen(kodeDosen);
-		return flagUpdate;
+		result = dosenService.deleteDosen(kodeDosen);
+		return result;
 	}
 
 }

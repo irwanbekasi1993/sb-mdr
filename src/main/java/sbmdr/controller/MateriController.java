@@ -33,11 +33,13 @@ public class MateriController {
 	@Autowired
 	private MateriService materiService;
 
+	private String result;
+
 	@PreAuthorize("hasRole('DOSEN')")
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataMateri(@RequestBody Materi materi) {
-		String flagInsert = materiService.insertMateri(materi);
-		return flagInsert;
+		result = materiService.insertMateri(materi);
+		return result;
 	}
 
 	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
@@ -56,15 +58,15 @@ public class MateriController {
 	@PreAuthorize("hasRole('DOSEN')")
 	@RequestMapping(value = "/update/{kodeMateri}", method = RequestMethod.PUT)
 	public String updateDataMateri(@RequestBody Materi materi, @PathVariable("kodeMateri") String kodeMateri) {
-		String flagUpdate = materiService.updateMateri(materi,kodeMateri);
-		return flagUpdate;
+		result = materiService.updateMateri(materi,kodeMateri);
+		return result;
 	}
 	
 	@PreAuthorize("hasRole('DOSEN')")
 	@RequestMapping(value = "/delete/{kodeMateri}", method = RequestMethod.DELETE)
 	public String deleteDataMateri(@PathVariable("kodeMateri") String kodeMateri) {
-		String flagUpdate = materiService.deleteMateri(kodeMateri);
-		return flagUpdate;
+		result = materiService.deleteMateri(kodeMateri);
+		return result;
 	}
 
 }

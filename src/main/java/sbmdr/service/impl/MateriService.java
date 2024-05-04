@@ -43,9 +43,9 @@ public class MateriService {
 	
 	private ObjectMapper objectMapper;
 	
+	private String result;
 
 	public String insertMateri(Materi localMateri) {
-		String result = null;
 		
 		try {
 			Materi cek = getMateri(localMateri.getKodeMateri());
@@ -53,14 +53,11 @@ public class MateriService {
 				materiRepository.insertDataMateri(localMateri.getKodeMateri(), localMateri.getJenisMateri(),
 					localMateri.getIsiMateri());
 
-				
-				redisMateri = new RedisMateri();
 				redisMateri.setKodeMateri(localMateri.getKodeMateri());
 				redisMateri.setJenisMateri(localMateri.getJenisMateri());
 				redisMateri.setIsiMateri(localMateri.getIsiMateri());
 				redisMateriRepo.save(redisMateri);
 				
-				objectMapper = new ObjectMapper();
 				byte[]bytes = objectMapper.writeValueAsBytes(localMateri);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);
@@ -104,7 +101,6 @@ public class MateriService {
 	}
 
 	public String deleteMateri(String kodeMateri) {
-		String result = null;
 		try {
 			Materi cekMateri = getMateri(kodeMateri);
 			if(cekMateri!=null){
@@ -124,20 +120,17 @@ public class MateriService {
 	}
 
 	public String updateMateri(Materi materi, String kodeMateri) {
-		String result = null;
 		try {
 			Materi cekMateri = getMateri(kodeMateri);
 			if(cekMateri!=null){
 				 materiRepository.updateDataMateri(materi.getJenisMateri(), materi.getIsiMateri(), kodeMateri);
 				
-				redisMateri = new RedisMateri();
 				materi.setKodeMateri(kodeMateri);
 				redisMateri.setKodeMateri(materi.getKodeMateri());
 				redisMateri.setJenisMateri(materi.getJenisMateri());
 				redisMateri.setIsiMateri(materi.getIsiMateri());
 				redisMateriRepo.save(redisMateri);
 				
-				objectMapper = new ObjectMapper();
 				byte[]bytes = objectMapper.writeValueAsBytes(materi);
 				String str = new String(bytes);
 				System.err.println("sending message: "+str);
@@ -164,12 +157,5 @@ public class MateriService {
 		this.materiRepository = materiRepository;
 	}
 
-	public Materi getMateri() {
-		return materi;
-	}
-
-	public void setMateri(Materi materi) {
-		this.materi = materi;
-	}
 
 }

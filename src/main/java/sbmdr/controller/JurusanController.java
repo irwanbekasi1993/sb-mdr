@@ -30,14 +30,13 @@ public class JurusanController {
 	@Autowired
 	private JurusanService jurusanService;
 
-				@Value("${sbmdr.key}")
-private String key;
+	private String result;
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataJurusan(@RequestBody Jurusan jurusan) {
-		String flagInsert = jurusanService.insertJurusan(jurusan);
-		return flagInsert;
+		result = jurusanService.insertJurusan(jurusan);
+		return result;
 	}
 
 	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
@@ -55,15 +54,15 @@ private String key;
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/update/{kodeJurusan}", method = RequestMethod.PUT)
 	public String updateDataJurusan(@RequestBody Jurusan jurusan, @PathVariable("kodeJurusan") String kodeJurusan) {
-		String flagUpdate = jurusanService.updateJurusan(jurusan,kodeJurusan);
-		return flagUpdate;
+		result = jurusanService.updateJurusan(jurusan,kodeJurusan);
+		return result;
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/delete/{kodeJurusan}", method = RequestMethod.DELETE)
 	public String deleteDataJurusan(@PathVariable("kodeJurusan") String kodeJurusan) {
-		String flagUpdate = jurusanService.deleteJurusan(kodeJurusan);
-		return flagUpdate;
+		result = jurusanService.deleteJurusan(kodeJurusan);
+		return result;
 	}
 
 }

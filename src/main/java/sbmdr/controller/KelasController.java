@@ -28,14 +28,13 @@ public class KelasController {
 	@Autowired
 	private KelasService kelasService;
 
-				@Value("${sbmdr.key}")
-private String key;
+	private String result;
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataDosen(@RequestBody Kelas kelas) {
-		String flagInsert = kelasService.insertKelas(kelas);
-		return flagInsert;
+		result = kelasService.insertKelas(kelas);
+		return result;
 	}
 
 	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
@@ -53,15 +52,15 @@ private String key;
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/update/{kodeKelas}", method = RequestMethod.PUT)
 	public String updateDataKelas(@RequestBody Kelas kelas, @PathVariable("namaKelas") String namaKelas) {
-		String flagUpdate = kelasService.updateKelas(kelas,namaKelas);
-		return flagUpdate;
+		result = kelasService.updateKelas(kelas,namaKelas);
+		return result;
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/delete/{kodeKelas}", method = RequestMethod.DELETE)
 	public String deleteDataKelas(@PathVariable("kodeKelas") String kodeKelas) {
-		String flagUpdate = kelasService.deleteKelas(kodeKelas);
-		return flagUpdate;
+		result = kelasService.deleteKelas(kodeKelas);
+		return result;
 	}
 
 }

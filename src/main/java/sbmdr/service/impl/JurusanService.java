@@ -38,21 +38,19 @@ public class JurusanService {
 	
 	private ObjectMapper mapper;
 
+	private String result;
 
 	public String insertJurusan(Jurusan localJurusan) {
-		String result=null;
 
 		try {
 			Jurusan cekJur = getJurusan(localJurusan.getKodeJurusan());
 			if(cekJur==null){
 				jurusanRepository.insertDataJurusan(localJurusan.getKodeJurusan(), localJurusan.getNamaJurusan());
 				
-				redisJurusan = new RedisJurusan();
 				redisJurusan.setKodeJurusan(localJurusan.getKodeJurusan());
 				redisJurusan.setNamaJurusan(localJurusan.getNamaJurusan());
 				redisJurusanRepo.save(redisJurusan);
 				
-				mapper = new ObjectMapper();
 				byte[] bytes = mapper.writeValueAsBytes(localJurusan);
 				String str = new String(bytes);
 				
@@ -97,7 +95,6 @@ public class JurusanService {
 	}
 
 	public String deleteJurusan(String kodeJurusan) {
-		String result=null;
 		try {
 			Jurusan cek = getJurusan(kodeJurusan);
 			if(cek!=null){
@@ -118,7 +115,6 @@ public class JurusanService {
 
 	public String updateJurusan(Jurusan jurusan,String kodeJurusan) {
 		
-		String result=null;
 		try {
 			Jurusan cek = getJurusan(kodeJurusan);
 			if(cek!=null){
@@ -126,12 +122,10 @@ public class JurusanService {
 				
 				jurusan.setKodeJurusan(kodeJurusan);
 				
-				redisJurusan = new RedisJurusan();
 				redisJurusan.setKodeJurusan(jurusan.getKodeJurusan());
 				redisJurusan.setNamaJurusan(jurusan.getNamaJurusan());
 				redisJurusanRepo.save(redisJurusan);
 				
-				mapper= new ObjectMapper();
 				byte[]bytes = mapper.writeValueAsBytes(jurusan);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);

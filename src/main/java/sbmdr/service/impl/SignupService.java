@@ -34,13 +34,16 @@ public class SignupService {
         @Autowired
         private RedisDosenRepository redisDosenRepo;
 
-
         @Autowired
         private RedisMahasiswaRepository redisMahasiswaRepo;
 
+		private String result;
+
+		private RedisDosen redisDosen;
+
+		private RedisMahasiswa redisMahasiswa;
 
 	public String insertDosen(Dosen localDosen) {
-		String result = null;
 		
 		try {
 			if(roleRepository.findByName("ROLE_DOSEN").isPresent()){
@@ -50,7 +53,6 @@ public class SignupService {
 					dosenRepository.insertDataDosen(localDosen.getNip(), localDosen.getNamaDosen(),
 					localDosen.getEmail(),localDosen.getStatusDosen());
 
-					RedisDosen redisDosen = new RedisDosen();
 			redisDosen.setNip(localDosen.getNip());
 			redisDosen.setNamaDosen(localDosen.getNamaDosen());
 			redisDosen.setEmail(localDosen.getEmail());
@@ -81,7 +83,6 @@ public class SignupService {
 
 
     	public String insertMahasiswa(Mahasiswa localMahasiswa) {
-		String result=null;
 		
 		try {
 			if(roleRepository.findByName("ROLE_MAHASISWA").isPresent()){
@@ -91,7 +92,6 @@ public class SignupService {
 				localMahasiswa.getEmail(),localMahasiswa.getStatusMahasiswa());
 
 			
-			RedisMahasiswa redisMahasiswa = new RedisMahasiswa();
 			redisMahasiswa.setNim(localMahasiswa.getNim());
 			redisMahasiswa.setNamaMahasiswa(localMahasiswa.getNamaMahasiswa());
 			redisMahasiswa.setEmail(localMahasiswa.getEmail());

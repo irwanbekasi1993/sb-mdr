@@ -31,11 +31,13 @@ public class SoalController {
 	@Autowired
 	private SoalService soalService;
 
+	private String result;
+
 	@PreAuthorize("hasRole('DOSEN')")
 	@RequestMapping(value = "/insert", method = RequestMethod.POST)
 	public String insertDataSoal(@RequestBody Soal soal) {
-		String flagInsert = soalService.insertSoal(soal);
-		return flagInsert;
+		result = soalService.insertSoal(soal);
+		return result;
 	}
 
 	@RequestMapping(value = "/all/{limit}", method = RequestMethod.GET)
@@ -53,15 +55,15 @@ public class SoalController {
 	@PreAuthorize("hasRole('DOSEN')")
 	@RequestMapping(value = "/update/{kodeSoal}", method = RequestMethod.PUT)
 	public String updateDataSoal(@RequestBody Soal soal, @PathVariable("kodeSoal") String kodeSoal) {
-		String flagUpdate = soalService.updateSoal(soal,kodeSoal);
-		return flagUpdate;
+		result = soalService.updateSoal(soal,kodeSoal);
+		return result;
 	}
 	
 	@PreAuthorize("hasRole('DOSEN')")
 	@RequestMapping(value = "/delete/{kodeSoal}", method = RequestMethod.DELETE)
 	public String deleteDataSoal(@PathVariable("kodeSoal") String kodeSoal) {
-		String flagUpdate = soalService.deleteSoal(kodeSoal);
-		return flagUpdate;
+		result = soalService.deleteSoal(kodeSoal);
+		return result;
 	}
 
 }

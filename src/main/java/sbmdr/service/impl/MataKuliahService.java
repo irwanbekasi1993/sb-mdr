@@ -34,24 +34,23 @@ public class MataKuliahService {
 	
 	private ObjectMapper objectMapper;
 	
+	private String result;
+
+	private RedisMataKuliah redisMatkul;
 	
 	public String insertMatKul(MataKuliah localMatKul) {
-		String result=null;
 		
 		try {
 			MataKuliah cekMatkul = getMatKul(localMatKul.getKodeMatkul());
 			if(cekMatkul==null){
 				 matKulRepository.insertDataMatKul(localMatKul.getKodeMatkul(), localMatKul.getNamaMatkul(),
 					localMatKul.getSks());
-
 				
-				RedisMataKuliah redisMatkul = new RedisMataKuliah();
 				redisMatkul.setKodeMatkul(localMatKul.getKodeMatkul());
 				redisMatkul.setNamaMatkul(localMatKul.getNamaMatkul());
 				redisMatkul.setSks(localMatKul.getSks());
 				redisMatkulRepo.save(redisMatkul);
 				
-				objectMapper = new ObjectMapper();
 				byte[] bytes = objectMapper.writeValueAsBytes(localMatKul);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);
@@ -96,7 +95,6 @@ public class MataKuliahService {
 	}
 
 	public String deleteMatKul(String kodeMatKul) {
-		String result=null;
 		try {
 			MataKuliah cekMK = getMatKul(kodeMatKul);
 			if(cekMK!=null){
@@ -116,22 +114,18 @@ public class MataKuliahService {
 	}
 
 	public String updateMatKul(MataKuliah matKul,String kodeMatKul) {
-		String result=null;
 		try {
 			MataKuliah cekMatkul = getMatKul(kodeMatKul);
 			if(cekMatkul!=null){
 				 matKulRepository.updateDataMatKul(matKul.getNamaMatkul(),matKul.getSks(), kodeMatKul);
 			
-				
 				matKul.setKodeMatkul(kodeMatKul);
 				
-				RedisMataKuliah redisMatkul = new RedisMataKuliah();
 				redisMatkul.setKodeMatkul(matKul.getKodeMatkul());
 				redisMatkul.setNamaMatkul(matKul.getNamaMatkul());
 				redisMatkul.setSks(matKul.getSks());
 				redisMatkulRepo.save(redisMatkul);
 				
-				objectMapper = new ObjectMapper();
 				byte[] bytes = objectMapper.writeValueAsBytes(matKul);
 				String str = new String(bytes);
 				// kafkaTemplate.send("sbmdr",str);
