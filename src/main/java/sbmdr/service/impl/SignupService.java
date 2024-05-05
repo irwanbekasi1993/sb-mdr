@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.Mahasiswa;
 import sbmdr.model.redis.RedisDosen;
@@ -43,6 +45,14 @@ public class SignupService {
 
 		private RedisMahasiswa redisMahasiswa;
 
+		private KafkaProducerConfig kafkaProducerSignUp;
+private KafkaConsumerConfig kafkaConsumerSignUp;
+
+private void kafkaProcessing(String result){
+    kafkaProducerSignUp.sendMessage("kafka producer sign up produce result: "+result);
+    kafkaConsumerSignUp.consumeMessage("kafka consumer sign up consume result: "+result);
+}
+
 	public String insertDosen(Dosen localDosen) {
 		
 		try {
@@ -71,7 +81,7 @@ public class SignupService {
 				}else{
 					result = "data dosen sudah ada";
 				}
-				
+				kafkaProcessing(result);
                 
 		}
 		} catch (Exception e) {
@@ -108,6 +118,7 @@ public class SignupService {
 	}else{
 		result="data mahasiswa sudah ada";
 	}
+	kafkaProcessing(result);
 }
 			
 		} catch (Exception e) {

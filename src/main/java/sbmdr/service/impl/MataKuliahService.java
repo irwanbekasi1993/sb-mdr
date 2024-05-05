@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.MataKuliah;
 import sbmdr.model.redis.RedisMataKuliah;
@@ -37,6 +39,14 @@ public class MataKuliahService {
 	private String result;
 
 	private RedisMataKuliah redisMatkul;
+
+	private KafkaProducerConfig kafkaProducerMK;
+private KafkaConsumerConfig kafkaConsumerMK;
+
+private void kafkaProcessing(String result){
+    kafkaProducerMK.sendMessage("kafka producer mata kuliah produce result: "+result);
+    kafkaConsumerMK.consumeMessage("kafka consumer mata kuliah consume result: "+result);
+}
 	
 	public String insertMatKul(MataKuliah localMatKul) {
 		
@@ -61,7 +71,7 @@ public class MataKuliahService {
 			}else{
 				result="data kuliah not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -105,7 +115,7 @@ public class MataKuliahService {
 			}else{
 				result="data mata kuliah not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -136,7 +146,7 @@ public class MataKuliahService {
 			}else{
 				result="data mata kuliah not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

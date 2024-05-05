@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.MataKuliah;
 import sbmdr.model.Semester;
@@ -41,6 +43,13 @@ public class SemesterService {
 
 	private String result;
 
+	private KafkaProducerConfig kafkaProducerSMS;
+private KafkaConsumerConfig kafkaConsumerSMS;
+
+private void kafkaProcessing(String result){
+    kafkaProducerSMS.sendMessage("kafka producer semester produce result: "+result);
+    kafkaConsumerSMS.consumeMessage("kafka consumer semester consume result: "+result);
+}
 
 	public String insertSemester(Semester localSemester) {
 		
@@ -64,7 +73,7 @@ public class SemesterService {
 			}else{
 				result="semester not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -107,7 +116,7 @@ public class SemesterService {
 			}else{
 				result="data semester not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -137,7 +146,7 @@ public class SemesterService {
 			}else{
 				result="data semester not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

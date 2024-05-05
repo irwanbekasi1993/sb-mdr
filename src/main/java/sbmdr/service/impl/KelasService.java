@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.Kelas;
 import sbmdr.model.MataKuliah;
@@ -40,6 +42,14 @@ public class KelasService {
 
 	private String result;
 
+	private KafkaProducerConfig kafkaProducerKelas;
+private KafkaConsumerConfig kafkaConsumerKelas;
+
+private void kafkaProcessing(String result){
+    kafkaProducerKelas.sendMessage("kafka producer kelas produce result: "+result);
+    kafkaConsumerKelas.consumeMessage("kafka consumer kelas consume result: "+result);
+}
+
 	public String insertKelas(Kelas localKelas) {
 		
 		try {
@@ -64,7 +74,7 @@ public class KelasService {
 			}else{
 				result="data kelas not found";
 			}
-			
+			kafkaProcessing(result);
 			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -108,7 +118,7 @@ public class KelasService {
 			}else{
 				result="data kelas not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -141,6 +151,7 @@ public class KelasService {
 		}else{
 			result="data kelas not found";
 		}
+		kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

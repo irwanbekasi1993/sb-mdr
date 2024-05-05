@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.MataKuliah;
 import sbmdr.model.Materi;
@@ -45,6 +47,14 @@ public class MateriService {
 	
 	private String result;
 
+	private KafkaProducerConfig kafkaProducerMateri;
+private KafkaConsumerConfig kafkaConsumerMateri;
+
+private void kafkaProcessing(String result){
+    kafkaProducerMateri.sendMessage("kafka producer materi produce result: "+result);
+    kafkaConsumerMateri.consumeMessage("kafka consumer materi consume result: "+result);
+}
+
 	public String insertMateri(Materi localMateri) {
 		
 		try {
@@ -68,7 +78,7 @@ public class MateriService {
 			}else{
 				result = "materi not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -90,7 +100,6 @@ public class MateriService {
 	}
 
 	public Materi getMateri(String kodeMateri) {
-		Materi materi = new Materi();
 		try {
 			materi = materiRepository.getMateriByKodeMateri(kodeMateri);
 		} catch (Exception e) {
@@ -111,7 +120,7 @@ public class MateriService {
 			}else{
 				result="data materi not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -141,7 +150,7 @@ public class MateriService {
 			}else{
 				result="data materi not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

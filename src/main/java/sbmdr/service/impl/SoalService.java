@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.MataKuliah;
 import sbmdr.model.Semester;
@@ -41,6 +43,14 @@ public class SoalService {
 	
 	private String result;
 
+	private KafkaProducerConfig kafkaProducerSoal;
+private KafkaConsumerConfig kafkaConsumerSoal;
+
+private void kafkaProcessing(String result){
+    kafkaProducerSoal.sendMessage("kafka producer soal produce result: "+result);
+    kafkaConsumerSoal.consumeMessage("kafka consumer soal consume result: "+result);
+}
+
 	public String insertSoal(Soal localSoal) {
 		
 		try {
@@ -65,7 +75,7 @@ public class SoalService {
 			}else{
 				result="soal not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -107,6 +117,7 @@ public class SoalService {
 			}else{
 				result="data soal not found";
 			}
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -136,6 +147,7 @@ public class SoalService {
 			}else{
 				result="data soal not found";
 			}
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

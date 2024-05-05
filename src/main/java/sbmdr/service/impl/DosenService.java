@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.redis.RedisDosen;
 import sbmdr.repository.DosenRepository;
@@ -36,12 +38,17 @@ public class DosenService {
 	// @Autowired
 	// private KafkaTemplate<String, String> kafkaTemplate;
 
-	// private KafkaConsumer<String, Dosen> kafkaConsumer;
+	private KafkaProducerConfig kafkaProducerDosen;
+	private KafkaConsumerConfig kafkaConsumerDosen;
 	
 	private ObjectMapper mapper = new ObjectMapper();
 
 	private String result;
 	
+	private void kafkaProcessing(String result){
+		kafkaProducerDosen.sendMessage("kafka producer dosen produce result: "+result);
+		kafkaConsumerDosen.consumeMessage("kafka consumer dosen consume result: "+result);
+	}
 
 	public List<Dosen> getAllDosen(int limit) {
 		List<Dosen> listDosen = new ArrayList<>();
@@ -79,6 +86,7 @@ public class DosenService {
 			}else{
 				result="data dosen not found";
 			}
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -116,7 +124,7 @@ public class DosenService {
 			}else{
 				result="data dosen not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

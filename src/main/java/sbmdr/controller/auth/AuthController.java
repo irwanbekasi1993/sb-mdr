@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.Mahasiswa;
 import sbmdr.model.RefreshToken;
@@ -78,9 +80,15 @@ public class AuthController {
     @Autowired
     private RedisUserRepository redisUserRepository;
 
-    			@Value("${sbmdr.key}")
-private String key;
+private KafkaProducerConfig kafkaProducerAuth;
+private KafkaConsumerConfig kafkaConsumerAuth;
 
+private void kafkaProcessing(String result){
+    kafkaProducerAuth.sendMessage("kafka producer jadwal produce result: "+result);
+    kafkaConsumerAuth.consumeMessage("kafka consumer jadwal consume result: "+result);
+}
+
+ 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -100,6 +108,9 @@ private String key;
 
         refreshTokenService.findByToken(requestToken.getRefreshToken()).map(refreshTokenService::verifyExpiration);
         User getUser = refreshToken.getUser();
+        if(getUser!=null){
+            kafkaProcessing("signin using username: "+getUser.getUsername());
+        }
         String obtainToken = jwtUtils.generateTokenFromUsername(getUser.getUsername());
         TokenRefreshResponse tokenResponse = new TokenRefreshResponse(obtainToken,requestToken.getRefreshToken(),getUser.getUsername(),getUser.getRoles());
         return ResponseEntity.ok(tokenResponse);
@@ -108,9 +119,11 @@ private String key;
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest){
         if(userRepository.existsByUsername(signupRequest.getUsername())){
+            kafkaProcessing("username is exists");
             return ResponseEntity.badRequest().body(new MessageResponse("username is exists"));
         }
         if(userRepository.existsByEmail(signupRequest.getEmail())){
+            kafkaProcessing("email is exists");
             return ResponseEntity.badRequest().body(new MessageResponse("email is exists"));
         }
         User user = new User(signupRequest.getUsername(), signupRequest.getEmail(), encoder.encode(signupRequest.getPassword()));
@@ -176,6 +189,7 @@ private String key;
         redisUser.setUsername(user.getUsername());
         redisUser.setEmail(user.getEmail());
         redisUserRepository.save(redisUser);
+        kafkaProcessing("user registered successfully");
         return ResponseEntity.ok(new MessageResponse("user registered successfully"));
     }
 

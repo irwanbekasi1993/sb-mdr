@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.Jurusan;
 import sbmdr.model.MataKuliah;
@@ -40,6 +42,14 @@ public class JurusanService {
 
 	private String result;
 
+	private KafkaProducerConfig kafkaProducerJurusan;
+private KafkaConsumerConfig kafkaConsumerJurusan;
+
+private void kafkaProcessing(String result){
+    kafkaProducerJurusan.sendMessage("kafka producer jurusan produce result: "+result);
+    kafkaConsumerJurusan.consumeMessage("kafka consumer jurusan consume result: "+result);
+}
+
 	public String insertJurusan(Jurusan localJurusan) {
 
 		try {
@@ -60,7 +70,7 @@ public class JurusanService {
 			}else{
 				result="data jurusan not found";
 			}
-			
+			kafkaProcessing(result);
 			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -105,7 +115,7 @@ public class JurusanService {
 			}else{
 				result = "data jurusan not found";
 			}
-			 
+			 kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -138,7 +148,7 @@ public class JurusanService {
 			}else{
 				result="data jurusan not found";
 			}
-			
+			kafkaProcessing(result);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

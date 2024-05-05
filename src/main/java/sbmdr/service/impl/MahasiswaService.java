@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.Mahasiswa;
 import sbmdr.model.redis.RedisMahasiswa;
@@ -40,6 +42,14 @@ public class MahasiswaService {
 	private ObjectMapper objectMapper;
 
 	private String result;
+
+	private KafkaProducerConfig kafkaProducerMhs;
+private KafkaConsumerConfig kafkaConsumerMhs;
+
+private void kafkaProcessing(String result){
+    kafkaProducerMhs.sendMessage("kafka producer mahasiswa produce result: "+result);
+    kafkaConsumerMhs.consumeMessage("kafka consumer mahasiswa consume result: "+result);
+}
 	
 	public List<Mahasiswa> getAllMahasiswa(int limit) {
 		List<Mahasiswa> listMahasiswa = new ArrayList<>();
@@ -76,6 +86,7 @@ public class MahasiswaService {
 			}else{
 				result="data mahasiswa not found";
 			}
+			kafkaProcessing(result);
 			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -113,6 +124,7 @@ public class MahasiswaService {
 			}else{
 				result = "data mahasiswa not found";
 			}
+			kafkaProcessing(result);
 			
 		} catch (Exception e) {
 			// TODO: handle exception

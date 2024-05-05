@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import sbmdr.config.KafkaConsumerConfig;
+import sbmdr.config.KafkaProducerConfig;
 import sbmdr.model.Dosen;
 import sbmdr.model.Jadwal;
 import sbmdr.model.Jurusan;
@@ -39,6 +41,16 @@ private MahasiswaService mahasiswaService;
 @Autowired
 private SemesterService semesterService;
 
+private int flag;
+
+private KafkaProducerConfig kafkaProducerJadwal;
+private KafkaConsumerConfig kafkaConsumerJadwal;
+
+private void kafkaProcessing(String result){
+    kafkaProducerJadwal.sendMessage("kafka producer jadwal produce result: "+result);
+    kafkaConsumerJadwal.consumeMessage("kafka consumer jadwal consume result: "+result);
+}
+
 public List<Jadwal> listAllJadwal(int limit){
     return jadwalRepository.viewAllJadwal(limit);
 }
@@ -61,7 +73,12 @@ public Jadwal insertJadwal(JadwalRequest jadwalRequest){
     jadwal.setMahasiswa(mhs);
     jadwal.setSemester(semester);
 
-        return jadwalRepository.save(jadwal);
+        Jadwal insertJadwal = jadwalRepository.save(jadwal);
+        if(insertJadwal!=null){
+            kafkaProcessing("jadwal successfully insert with id: "+insertJadwal.getId());
+        }else{
+            kafkaProcessing("jadwal already exists");
+        }
     }
     return null;
 }
@@ -76,12 +93,18 @@ public int updateJadwal(JadwalRequest jadwalRequest){
     Mahasiswa mhs = mahasiswaService.getMahasiswa(jadwalRequest.getNim());
     Semester semester = semesterService.getSemester( jadwalRequest.getKodeSemester());
 
-        return jadwalRepository.updateJadwal(dosen.getNip(),
+        flag = jadwalRepository.updateJadwal(dosen.getNip(),
          jurusan.getKodeJurusan(),
           kelas.getKodeKelas(), 
           matkul.getKodeMatkul(),
           mhs.getNim(),
           semester.getKodeSemester());
+
+          if(flag==1){
+            kafkaProcessing("jadwal updated successfully with id: "+cekJadwal(jadwalRequest).getId());
+          }else{
+            kafkaProcessing("jadwal not found ");
+          }
     }
     return 0;
 }
@@ -113,12 +136,18 @@ public int deleteJadwal(JadwalRequest jadwalRequest){
     Semester semester = semesterService.getSemester( jadwalRequest.getKodeSemester());
 
 
-        return jadwalRepository.deleteJadwal(dosen.getNip(),
+        flag= jadwalRepository.deleteJadwal(dosen.getNip(),
          jurusan.getKodeJurusan(),
           kelas.getKodeKelas(), 
           matkul.getKodeMatkul(),
           mhs.getNim(),
           semester.getKodeSemester());
+
+          if(flag==1){
+            kafkaProcessing("jadwal deleted successfully");
+          }else{
+            kafkaProcessing("jadwal not found");
+          }
     }
     return 0;
     
